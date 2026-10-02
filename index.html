@@ -3,4406 +3,665 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>أثر | تقييم وقياس أثر أوراق العمل</title>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
-<script src="https://unpkg.com/lucide@latest"></script>
-
+<title>أثر | نظام تقييم أوراق العمل وقياس الأثر</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@700&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap');
-
-:root{
-  --primary:#6f7cff;
-  --primary-dark:#5866e8;
-  --primary-soft:#eef0ff;
-  --mint:#6ccbb1;
-  --mint-soft:#eaf8f4;
-  --peach:#f3ad83;
-  --peach-soft:#fff2e9;
-  --sky:#79b9e8;
-  --sky-soft:#edf7fd;
-  --ink:#263044;
-  --ink-2:#47536a;
-  --muted:#7d8799;
-  --muted-2:#a6afbd;
-  --bg:#f7f8f6;
-  --surface:#ffffff;
-  --surface-2:#fbfcfa;
-  --border:#e8ebe7;
-  --border-soft:#eef1ed;
-  --shadow-sm:0 4px 18px rgba(55,67,82,.055);
-  --shadow:0 14px 40px rgba(55,67,82,.075);
-  --shadow-lg:0 24px 70px rgba(55,67,82,.14);
-  --radius:22px;
-  --radius-sm:14px;
-}
-
-*{
-  box-sizing:border-box;
-  margin:0;
-  padding:0
-}
-
-html{
-  scroll-behavior:smooth
-}
-
-body{
-  font-family:"Cairo",sans-serif;
-  background:
-    radial-gradient(circle at 7% 4%,rgba(111,124,255,.08),transparent 24%),
-    radial-gradient(circle at 92% 16%,rgba(108,203,177,.07),transparent 23%),
-    linear-gradient(180deg,#fafbf9 0%,#f5f7f5 100%);
-  color:var(--ink);
-  min-height:100vh;
-}
-
-button,input,select,textarea{
-  font-family:inherit
-}
-
-button{
-  cursor:pointer
-}
-
-::selection{
-  background:#dfe3ff;
-  color:#3f4cbd
-}
-
-.app{
-  min-height:100vh
-}
-
-/* SIDEBAR */
-
-.sidebar{
-  position:fixed;
-  top:14px;
-  right:14px;
-  bottom:14px;
-  width:255px;
-  background:rgba(255,255,255,.88);
-  border:1px solid rgba(255,255,255,.95);
-  color:var(--ink);
-  padding:18px 14px;
-  z-index:1000;
-  box-shadow:0 18px 55px rgba(58,70,86,.09);
-  border-radius:28px;
-  display:flex;
-  flex-direction:column;
-  backdrop-filter:blur(22px);
-  -webkit-backdrop-filter:blur(22px);
-}
-
-.sidebar::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  border-radius:28px;
-  pointer-events:none;
-  background:linear-gradient(
-    145deg,
-    rgba(111,124,255,.045),
-    transparent 35%,
-    rgba(108,203,177,.045)
-  );
-}
-
-.brand{
-  display:flex;
-  align-items:center;
-  gap:12px;
-  padding:6px 8px 20px;
-  margin-bottom:12px;
-  position:relative
-}
-
-.brand-icon{
-  width:46px;
-  height:46px;
-  border-radius:16px;
-  background:linear-gradient(135deg,#7785ff,#9c8cf5);
-  color:#fff;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  box-shadow:0 10px 25px rgba(111,124,255,.22);
-}
-
-.brand-icon svg{
-  width:22px;
-  height:22px
-}
-
-.brand h2{
-  font-size:21px;
-  line-height:1.2;
-  font-weight:800;
-  letter-spacing:-.5px
-}
-
-.brand span{
-  display:block;
-  margin-top:4px;
-  color:#8b94a4;
-  font-size:9px
-}
-
-.nav{
-  display:flex;
-  flex-direction:column;
-  gap:7px;
-  position:relative
-}
-
-.nav button{
-  width:100%;
-  border:1px solid transparent;
-  background:transparent;
-  color:#7a8495;
-  padding:12px 13px;
-  border-radius:15px;
-  display:flex;
-  align-items:center;
-  gap:11px;
-  text-align:right;
-  font-size:12px;
-  font-weight:700;
-  transition:.22s ease;
-}
-
-.nav button svg{
-  width:18px;
-  height:18px;
-  stroke-width:1.8
-}
-
-.nav button:hover{
-  background:#f4f6f4;
-  color:#4e596c;
-  transform:translateX(-2px)
-}
-
-.nav button.active{
-  background:linear-gradient(135deg,#eef0ff,#f3f1ff);
-  border-color:#e4e6ff;
-  color:#5866d9;
-  box-shadow:0 8px 22px rgba(111,124,255,.08);
-}
-
-.nav button.active::before{
-  content:"";
-  width:4px;
-  height:22px;
-  border-radius:10px;
-  background:#7785ff;
-  margin-right:auto;
-  order:-1;
-}
-
-.sidebar-footer{
-  margin-top:auto;
-  padding:15px 10px 3px;
-  border-top:1px solid #edf0ed;
-  color:#9aa3b0;
-  font-size:9px;
-  line-height:2.05;
-  position:relative
-}
-
-/* MAIN */
-
-.main{
-  margin-right:283px;
-  width:calc(100% - 283px);
-  min-height:100vh
-}
-
-/* TOPBAR */
-
-.topbar{
-  height:78px;
-  background:rgba(250,251,249,.78);
-  backdrop-filter:blur(20px);
-  -webkit-backdrop-filter:blur(20px);
-  border-bottom:1px solid rgba(229,233,229,.72);
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:0 38px;
-  position:sticky;
-  top:0;
-  z-index:100;
-}
-
-.topbar-title h1{
-  font-size:18px;
-  font-weight:800;
-  letter-spacing:-.35px
-}
-
-.topbar-title small{
-  display:block;
-  color:var(--muted);
-  font-size:10px;
-  margin-top:2px
-}
-
-.date{
-  display:flex;
-  align-items:center;
-  padding:8px 13px;
-  background:rgba(255,255,255,.85);
-  border:1px solid var(--border);
-  border-radius:12px;
-  color:#758093;
-  font-size:10px;
-  box-shadow:var(--shadow-sm)
-}
-
-/* CONTENT */
-
-.content{
-  padding:30px 38px 50px;
-  max-width:1650px;
-  margin:auto
-}
-
-.page{
-  display:none;
-  animation:pageEnter .32s ease
-}
-
-.page.active{
-  display:block
-}
-
-@keyframes pageEnter{
-  from{
-    opacity:0;
-    transform:translateY(6px)
-  }
-  to{
-    opacity:1;
-    transform:none
-  }
-}
-
-/* HERO */
-
-.hero{
-  position:relative;
-  min-height:275px;
-  border-radius:30px;
-  padding:40px 43px;
-  overflow:hidden;
-  color:var(--ink);
-  background:
-    radial-gradient(circle at 82% 18%,rgba(255,255,255,.9),transparent 20%),
-    radial-gradient(circle at 75% 100%,rgba(108,203,177,.28),transparent 30%),
-    linear-gradient(135deg,#eef0ff 0%,#f4f3ff 46%,#edf9f5 100%);
-  border:1px solid rgba(255,255,255,.95);
-  box-shadow:0 20px 55px rgba(85,98,117,.09);
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:25px;
-}
-
-.hero::before{
-  content:"";
-  position:absolute;
-  width:360px;
-  height:360px;
-  border:1px solid rgba(111,124,255,.09);
-  border-radius:50%;
-  left:-150px;
-  bottom:-220px;
-}
-
-.hero::after{
-  content:"";
-  position:absolute;
-  width:220px;
-  height:220px;
-  border:1px solid rgba(108,203,177,.13);
-  border-radius:50%;
-  right:180px;
-  top:-130px;
-}
-
-.hero > div:first-child{
-  position:relative;
-  z-index:2
-}
-
-.hero h2{
-  font-size:30px;
-  line-height:1.5;
-  max-width:700px;
-  font-weight:800;
-  letter-spacing:-.8px;
-  margin-bottom:10px
-}
-
-.hero p{
-  color:#727d8d;
-  font-size:12px;
-  line-height:2;
-  max-width:680px
-}
-
-.hero-icon{
-  position:relative;
-  z-index:2;
-  width:145px;
-  height:145px;
-  border-radius:42px;
-  background:rgba(255,255,255,.65);
-  border:1px solid rgba(255,255,255,.9);
-  backdrop-filter:blur(12px);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  transform:rotate(-5deg);
-  box-shadow:0 20px 45px rgba(80,95,115,.08);
-  color:#7280ee
-}
-
-.hero-icon svg{
-  width:67px;
-  height:67px;
-  stroke-width:1.25;
-  transform:rotate(5deg)
-}
-
-/* BUTTONS */
-
-.buttons{
-  display:flex;
-  gap:9px;
-  flex-wrap:wrap;
-  margin-top:20px
-}
-
-.btn{
-  border:0;
-  min-height:41px;
-  padding:9px 15px;
-  border-radius:12px;
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  gap:7px;
-  font-size:11px;
-  font-weight:700;
-  transition:.22s ease;
-}
-
-.btn svg{
-  width:16px;
-  height:16px
-}
-
-.btn:hover{
-  transform:translateY(-2px)
-}
-
-.btn-primary{
-  background:linear-gradient(135deg,#7482ff,#8f83e8);
-  color:#fff;
-  box-shadow:0 9px 22px rgba(111,124,255,.18)
-}
-
-.btn-primary:hover{
-  box-shadow:0 13px 28px rgba(111,124,255,.25)
-}
-
-.btn-light{
-  background:rgba(255,255,255,.9);
-  color:#5d68c9;
-  border:1px solid rgba(255,255,255,.95);
-  box-shadow:0 7px 20px rgba(55,67,82,.08)
-}
-
-.btn-secondary{
-  background:#eef0ff;
-  color:#5d69d4;
-  border:1px solid #e3e6ff
-}
-
-.btn-success{
-  background:#eaf8f3;
-  color:#238d72;
-  border:1px solid #dcf1e9
-}
-
-.btn-danger{
-  background:#fff0ed;
-  color:#d66a61;
-  border:1px solid #ffe2dc
-}
-
-.btn-light:hover,
-.btn-secondary:hover,
-.btn-success:hover,
-.btn-danger:hover{
-  box-shadow:var(--shadow-sm)
-}
-
-/* STATS */
-
-.stats{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:15px;
-  margin-bottom:30px
-}
-
-.stat{
-  position:relative;
-  background:rgba(255,255,255,.86);
-  border:1px solid var(--border);
-  border-radius:20px;
-  padding:19px;
-  min-height:138px;
-  box-shadow:var(--shadow-sm);
-  overflow:hidden;
-  transition:.25s ease
-}
-
-.stat:hover{
-  transform:translateY(-4px);
-  box-shadow:var(--shadow)
-}
-
-.stat::after{
-  content:"";
-  position:absolute;
-  width:110px;
-  height:110px;
-  border-radius:50%;
-  left:-52px;
-  bottom:-60px;
-  background:rgba(111,124,255,.045)
-}
-
-.stat .icon{
-  width:40px;
-  height:40px;
-  border-radius:13px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  margin-bottom:13px
-}
-
-.stat .icon svg{
-  width:18px;
-  height:18px
-}
-
-.purple{
-  background:#eef0ff;
-  color:#6875e9
-}
-
-.blue{
-  background:#edf7fd;
-  color:#5a9bc9
-}
-
-.green{
-  background:#eaf8f3;
-  color:#55aa91
-}
-
-.orange{
-  background:#fff2e9;
-  color:#db966c
-}
-
-.stat strong{
-  display:block;
-  font-size:24px;
-  font-weight:800;
-  letter-spacing:-.5px
-}
-
-.stat span{
-  display:block;
-  color:var(--muted);
-  font-size:10px;
-  margin-top:3px
-}
-
-/* TITLES */
-
-.section-title{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:15px;
-  margin:28px 0 14px
-}
-
-.section-title h2{
-  font-size:17px;
-  font-weight:800;
-  letter-spacing:-.3px
-}
-
-.section-title h3{
-  font-size:15px
-}
-
-.section-title small{
-  color:var(--muted);
-  font-size:10px;
-  display:block;
-  margin-top:3px
-}
-
-/* CARDS */
-
-.card{
-  background:rgba(255,255,255,.9);
-  border:1px solid var(--border);
-  border-radius:20px;
-  padding:22px;
-  margin-bottom:15px;
-  box-shadow:var(--shadow-sm)
-}
-
-.card h3{
-  font-size:14px;
-  font-weight:800
-}
-
-/* FORMS */
-
-.form-grid{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:17px
-}
-
-.form-group{
-  min-width:0
-}
-
-.form-group.full{
-  grid-column:1/-1
-}
-
-label{
-  display:block;
-  font-size:10px;
-  font-weight:700;
-  color:#5d687b;
-  margin-bottom:7px
-}
-
-input,select,textarea{
-  width:100%;
-  border:1px solid #e2e7e2;
-  background:#fafcfa;
-  color:#293446;
-  border-radius:12px;
-  padding:11px 13px;
-  font-size:11px;
-  outline:none;
-  transition:.2s ease;
-  box-shadow:inset 0 1px 1px rgba(35,45,58,.015)
-}
-
-input:hover,select:hover,textarea:hover{
-  background:#fff;
-  border-color:#d9dfd9
-}
-
-input:focus,select:focus,textarea:focus{
-  background:#fff;
-  border-color:#a5afea;
-  box-shadow:0 0 0 4px rgba(111,124,255,.08)
-}
-
-textarea{
-  min-height:105px;
-  resize:vertical
-}
-
-/* TEACHERS */
-
-.teacher-add{
-  display:grid;
-  grid-template-columns:1fr auto auto;
-  gap:8px;
-  margin-top:16px
-}
-
-.teacher-list{
-  display:flex;
-  flex-wrap:wrap;
-  gap:7px;
-  margin-top:14px
-}
-
-.teacher-tag{
-  background:#f0f2ff;
-  border:1px solid #e3e6ff;
-  color:#5d69cc;
-  padding:6px 10px;
-  border-radius:11px;
-  font-size:9px;
-  display:flex;
-  align-items:center;
-  gap:7px
-}
-
-.teacher-tag button{
-  border:0;
-  background:transparent;
-  color:#d67b74;
-  font-size:15px;
-  line-height:1;
-  width:22px;
-  height:22px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  border-radius:7px;
-  transition:.2s;
-}
-
-.teacher-tag button:hover{
-  background:#ffe7e3;
-  color:#c74f47;
-}
-
-/* OBJECTIVES */
-
-.objectives{
-  margin-top:15px
-}
-
-.objective-row{
-  display:flex;
-  gap:8px;
-  margin-bottom:9px
-}
-
-.objective-row input{
-  flex:1
-}
-
-/* RATING TABLE */
-
-.rating-table{
-  width:100%;
-  border-collapse:separate;
-  border-spacing:0;
-  margin-top:15px;
-  overflow:hidden;
-  border:1px solid var(--border);
-  border-radius:15px;
-  background:#fff
-}
-
-.rating-table th,
-.rating-table td{
-  padding:12px;
-  border-bottom:1px solid var(--border-soft);
-  text-align:right;
-  font-size:10px
-}
-
-.rating-table th{
-  background:#f8faf8;
-  color:#737e8e;
-  font-weight:700
-}
-
-.rating-table tr:last-child td{
-  border-bottom:0
-}
-
-.rating-table tbody tr{
-  transition:.18s ease
-}
-
-.rating-table tbody tr:hover{
-  background:#fbfcfb
-}
-
-.rating-options{
-  display:flex;
-  gap:6px;
-  flex-wrap:wrap
-}
-
-.rating-options label{
-  margin:0;
-  cursor:pointer
-}
-
-.rating-options input{
-  display:none
-}
-
-.rating-options span{
-  width:34px;
-  height:34px;
-  border:1px solid #e0e5e0;
-  background:#fff;
-  border-radius:10px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:10px;
-  color:#727d8c;
-  transition:.2s
-}
-
-.rating-options span:hover{
-  border-color:#9da7ea;
-  color:#626fd2;
-  background:#f8f9ff
-}
-
-.rating-options input:checked + span{
-  background:linear-gradient(135deg,#7482ff,#8f83e8);
-  color:#fff;
-  border-color:#7482ff;
-  box-shadow:0 6px 14px rgba(111,124,255,.18)
-}
-
-/* RESULTS */
-
-.result-box{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:1px;
-  background:var(--border);
-  border:1px solid var(--border);
-  border-radius:16px;
-  overflow:hidden;
-  margin-top:19px
-}
-
-.result-item{
-  background:#fbfcfa;
-  text-align:center;
-  padding:17px 10px
-}
-
-.result-item strong{
-  display:block;
-  font-size:21px;
-  color:#5967cc;
-  font-weight:800
-}
-
-.result-item span{
-  display:block;
-  color:var(--muted);
-  font-size:9px;
-  margin-top:3px
-}
-
-/* FILE */
-
-.file-box{
-  position:relative;
-  border:1.5px dashed #cbd4ce;
-  border-radius:17px;
-  padding:27px;
-  text-align:center;
-  background:linear-gradient(180deg,#fbfcfb,#f7f9f7);
-  transition:.2s
-}
-
-.file-box:hover{
-  border-color:#9ca8e6;
-  background:#fafaff;
-  box-shadow:inset 0 0 0 4px rgba(111,124,255,.025)
-}
-
-.file-box svg{
-  width:30px;
-  height:30px;
-  color:#7380e2;
-  margin-bottom:8px
-}
-
-.file-box p{
-  font-size:10px;
-  color:#717c8b
-}
-
-.file-box input[type="file"]{
-  margin-top:10px;
-  background:#fff;
-}
-
-/* REPORTS */
-
-.report-list{
-  display:grid;
-  gap:13px
-}
-
-.report-card{
-  position:relative;
-  background:rgba(255,255,255,.9);
-  border:1px solid var(--border);
-  border-radius:19px;
-  padding:20px;
-  box-shadow:var(--shadow-sm);
-  transition:.22s
-}
-
-.report-card:hover{
-  transform:translateY(-3px);
-  box-shadow:var(--shadow)
-}
-
-.report-head{
-  display:flex;
-  justify-content:space-between;
-  align-items:flex-start;
-  gap:15px
-}
-
-.report-head h3{
-  font-size:14px;
-  font-weight:800
-}
-
-.badge{
-  white-space:nowrap;
-  background:#eaf8f3;
-  color:#318e74;
-  border:1px solid #d9f0e7;
-  padding:5px 10px;
-  border-radius:9px;
-  font-size:9px;
-  font-weight:800
-}
-
-.report-meta{
-  display:flex;
-  gap:14px;
-  flex-wrap:wrap;
-  color:var(--muted);
-  font-size:9px;
-  margin-top:7px
-}
-
-.report-card ul{
-  color:#707b8b;
-  font-size:10px;
-  line-height:1.9
-}
-
-/* CHART */
-
-.chart-container{
-  height:330px;
-  margin-top:21px;
-  padding:15px;
-  background:#fafcfb;
-  border:1px solid var(--border);
-  border-radius:16px
-}
-
-/* MODAL */
-
-.modal{
-  position:fixed;
-  inset:0;
-  background:rgba(47,56,70,.34);
-  backdrop-filter:blur(7px);
-  display:none;
-  align-items:center;
-  justify-content:center;
-  z-index:3000;
-  padding:20px
-}
-
-.modal.show{
-  display:flex;
-  animation:modalBg .2s ease
-}
-
-@keyframes modalBg{
-  from{opacity:0}
-  to{opacity:1}
-}
-
-.modal-content{
-  background:rgba(255,255,255,.97);
-  width:min(850px,100%);
-  max-height:90vh;
-  overflow:auto;
-  border-radius:24px;
-  padding:25px;
-  box-shadow:var(--shadow-lg);
-  animation:modalIn .25s ease;
-  border:1px solid rgba(255,255,255,.95)
-}
-
-@keyframes modalIn{
-  from{
-    opacity:0;
-    transform:translateY(15px) scale(.98)
-  }
-  to{
-    opacity:1;
-    transform:none
-  }
-}
-
-.modal-head{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:20px
-}
-
-.modal-head h2{
-  font-size:17px
-}
-
-.close{
-  width:36px;
-  height:36px;
-  border:1px solid var(--border);
-  background:#f7f9f7;
-  border-radius:11px;
-  color:#667286;
-  font-size:14px;
-  transition:.2s;
-}
-
-.close:hover{
-  background:#ffeceb;
-  color:#c95e57;
-  transform:none;
-}
-
-/* TOAST */
-
-.toast{
-  position:fixed;
-  left:25px;
-  bottom:25px;
-  background:rgba(42,51,65,.94);
-  color:#fff;
-  padding:11px 17px;
-  border-radius:13px;
-  font-size:10px;
-  box-shadow:var(--shadow-lg);
-  transform:translateY(80px);
-  opacity:0;
-  transition:.3s;
-  z-index:5000
-}
-
-.toast.show{
-  transform:translateY(0);
-  opacity:1
-}
-
-/* MOBILE */
-
-.mobile-menu{
-  display:none;
-  border:1px solid var(--border);
-  background:#fff;
-  color:#6572d3;
-  width:40px;
-  height:40px;
-  border-radius:12px;
-  align-items:center;
-  justify-content:center
-}
-
-::-webkit-scrollbar{
-  width:7px;
-  height:7px
-}
-
-::-webkit-scrollbar-track{
-  background:transparent
-}
-
-::-webkit-scrollbar-thumb{
-  background:#d8ddd9;
-  border-radius:20px
-}
-
-::-webkit-scrollbar-thumb:hover{
-  background:#bec6c0
-}
-
-@media(max-width:1050px){
-
-  .sidebar{
-    transform:translateX(120%);
-    transition:transform .3s ease
-  }
-
-  .sidebar.open{
-    transform:translateX(0)
-  }
-
-  .main{
-    margin-right:0;
-    width:100%
-  }
-
-  .mobile-menu{
-    display:flex
-  }
-
-  .topbar{
-    padding:0 20px
-  }
-
-  .content{
-    padding:24px 20px 40px
-  }
-
-  .stats{
-    grid-template-columns:repeat(2,1fr)
-  }
-
-}
-
-@media(max-width:700px){
-
-  .hero{
-    padding:29px 23px;
-    min-height:245px
-  }
-
-  .hero h2{
-    font-size:22px
-  }
-
-  .hero p{
-    font-size:10px
-  }
-
-  .hero-icon{
-    display:none
-  }
-
-  .stats{
-    grid-template-columns:1fr
-  }
-
-  .form-grid{
-    grid-template-columns:1fr
-  }
-
-  .form-group.full{
-    grid-column:auto
-  }
-
-  .teacher-add{
-    grid-template-columns:1fr
-  }
-
-  .result-box{
-    grid-template-columns:1fr
-  }
-
-  .topbar-title small{
-    display:none
-  }
-
-  .date{
-    display:none
-  }
-
-  .content{
-    padding:17px 13px 35px
-  }
-
-  .card{
-    padding:17px
-  }
-
-  .section-title{
-    align-items:flex-start
-  }
-
-  .report-head{
-    flex-direction:column
-  }
-
-}
-
-/* PRINT */
-
-@media print{
-
-  body{
-    background:#fff
-  }
-
-  .sidebar,
-  .topbar,
-  .buttons,
-  .nav,
-  .no-print{
-    display:none!important
-  }
-
-  .main{
-    margin:0;
-    width:100%
-  }
-
-  .content{
-    padding:0
-  }
-
-  .page{
-    display:none!important
-  }
-
-  #reportsPage{
-    display:block!important
-  }
-
-  .report-card{
-    box-shadow:none;
-    break-inside:avoid;
-    border:1px solid #ddd
-  }
-
-}
+:root{--bg:#f5f2ef;--card:#fff;--primary:#496875;--primary2:#385764;--accent:#c6bfb9;--text:#263238;--muted:#6b777c;--green:#155d27;--red:#c1121f;--gold:#9a7620;--shadow:0 10px 30px rgba(38,50,56,.08);--radius:18px}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(135deg,#f8f6f4,#eee9e5);font-family:Tajawal,Arial,sans-serif;color:var(--text)}button,input,select,textarea{font:inherit}button{cursor:pointer;border:0}
+.app{min-height:100vh;display:flex}.sidebar{width:260px;background:var(--primary);color:#fff;position:fixed;right:0;top:0;bottom:0;padding:22px 16px;z-index:20;overflow:auto}.brand{padding:8px 10px 24px;border-bottom:1px solid rgba(255,255,255,.15);margin-bottom:18px}.brand h1{font-family:Amiri,serif;font-size:34px;margin:0}.brand p{margin:2px 0 0;opacity:.8;font-size:13px}.nav button{width:100%;padding:13px 14px;border-radius:12px;background:transparent;color:#fff;text-align:right;margin:4px 0;display:flex;align-items:center;gap:10px}.nav button.active,.nav button:hover{background:rgba(255,255,255,.14)}.school-box{margin-top:20px;padding:14px;border-radius:14px;background:rgba(255,255,255,.1);font-size:13px}.logout{margin-top:10px;width:100%;padding:11px;border-radius:11px;background:rgba(255,255,255,.12);color:#fff}
+main{margin-right:260px;width:calc(100% - 260px);padding:26px;max-width:1500px}.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}.topbar h2{margin:0;font-size:26px}.view{display:none}.view.active{display:block}.grid{display:grid;gap:18px}.stats{grid-template-columns:repeat(4,minmax(0,1fr))}.card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px}.stat{display:flex;align-items:center;gap:14px}.stat .icon{width:52px;height:52px;border-radius:15px;background:#edf2f3;color:var(--primary);display:grid;place-items:center}.stat strong{display:block;font-size:28px}.muted{color:var(--muted);font-size:13px}.section-title{display:flex;justify-content:space-between;align-items:center;margin:24px 0 12px}.section-title h3{margin:0}.btn{padding:11px 17px;border-radius:11px;background:var(--primary);color:#fff;font-weight:700}.btn.secondary{background:#e8e4e1;color:var(--text)}.btn.green{background:var(--green)}.btn.red{background:var(--red)}.btn.small{padding:8px 11px;font-size:13px}.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}.field{display:flex;flex-direction:column;gap:7px}.field.full{grid-column:1/-1}.field label{font-weight:700;font-size:14px}.field input,.field select,.field textarea{width:100%;border:1px solid #ddd6d1;background:#fff;border-radius:11px;padding:11px 12px;outline:none}.field textarea{min-height:90px;resize:vertical}.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--primary)}.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:18px}.table-wrap{overflow:auto}.table{width:100%;border-collapse:collapse}.table th,.table td{padding:11px;border-bottom:1px solid #eee;text-align:right;white-space:nowrap}.table th{background:#f7f5f3}.teacher-list{display:grid;gap:9px;margin-top:15px}.teacher-row{display:flex;justify-content:space-between;align-items:center;background:#f7f5f3;padding:10px 12px;border-radius:10px}.checks{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.check{background:#f7f5f3;padding:10px;border-radius:10px}.rating-table input{width:70px}.pill{display:inline-block;padding:5px 9px;border-radius:20px;background:#edf2f3;color:var(--primary);font-size:12px;font-weight:700}.empty{text-align:center;padding:35px;color:var(--muted)}.modal{position:fixed;inset:0;background:rgba(22,32,36,.6);display:none;align-items:center;justify-content:center;z-index:100;padding:20px}.modal.show{display:flex}.modal-card{background:#fff;width:min(600px,100%);border-radius:22px;padding:24px;box-shadow:0 20px 60px rgba(0,0,0,.25)}.login-modal{background:linear-gradient(135deg,#f8f6f4,#e9e2dd)}.login-card{width:min(430px,100%);text-align:center}.login-logo{width:75px;height:75px;border-radius:22px;background:var(--primary);color:#fff;display:grid;place-items:center;margin:0 auto 14px;font-family:Amiri;font-size:36px}.login-card h2{margin:0 0 4px;font-family:Amiri;font-size:31px}.login-card p{color:var(--muted)}.error{color:var(--red);font-size:13px;margin-top:10px;min-height:18px}.loading{position:fixed;inset:0;background:#fff;z-index:200;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px}.spinner{width:38px;height:38px;border:4px solid #ddd;border-top-color:var(--primary);border-radius:50%;animation:spin .8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}.toast{position:fixed;left:22px;bottom:22px;background:#263238;color:#fff;padding:13px 17px;border-radius:12px;z-index:300;display:none}.toast.show{display:block}.hidden{display:none!important}.question{padding:12px;background:#f7f5f3;border-radius:12px;margin-bottom:10px}.question label{display:block;font-weight:700;margin-bottom:8px}.radio-row{display:flex;gap:15px;flex-wrap:wrap}.radio-row label{font-weight:400}.progress{height:10px;background:#eee;border-radius:20px;overflow:hidden}.progress>span{display:block;height:100%;background:var(--primary)}@media(max-width:950px){.sidebar{width:220px}main{margin-right:220px;width:calc(100% - 220px)}.stats{grid-template-columns:repeat(2,1fr)}.checks{grid-template-columns:repeat(2,1fr)}}@media(max-width:700px){.sidebar{position:relative;width:100%;height:auto}.app{display:block}.sidebar .nav{display:grid;grid-template-columns:repeat(2,1fr)}main{margin:0;width:100%;padding:15px}.stats,.form-grid,.checks{grid-template-columns:1fr}.topbar{align-items:flex-start;gap:10px;flex-direction:column}}
 </style>
 </head>
-
 <body>
 
-<div class="app">
+<div id="loading" class="loading"><div class="spinner"></div><strong>جاري تشغيل نظام أثر...</strong></div>
 
-<aside class="sidebar" id="sidebar">
-
-    <div class="brand">
-
-        <div class="brand-icon">
-            <i data-lucide="sparkles"></i>
-        </div>
-
-        <div>
-            <h2>أثر</h2>
-            <span>منصة تقييم أوراق العمل</span>
-        </div>
-
-    </div>
-
-    <nav class="nav">
-
-        <button class="active" data-page="homePage">
-            <i data-lucide="layout-dashboard"></i>
-            الرئيسية
-        </button>
-
-        <button data-page="evaluationPage">
-            <i data-lucide="file-check-2"></i>
-            تقييم ورقة العمل
-        </button>
-
-        <button data-page="impactPage">
-            <i data-lucide="chart-no-axes-combined"></i>
-            قياس الأثر
-        </button>
-
-        <button data-page="reportsPage">
-            <i data-lucide="files"></i>
-            التقارير
-        </button>
-
-    </nav>
-
-    <div class="sidebar-footer">
-        تصميم نوال ناجم الغنبوصي<br>
-        إشراف الأستاذة شغيلة العلوية
-    </div>
-
+<div class="app" id="app" style="display:none">
+<aside class="sidebar">
+  <div class="brand"><h1>أثر</h1><p>نظام تقييم أوراق العمل وقياس الأثر</p></div>
+  <div class="nav">
+    <button class="active" data-view="home"><i data-lucide="layout-dashboard"></i> لوحة التحكم</button>
+    <button data-view="worksheet"><i data-lucide="file-plus-2"></i> تسجيل ورقة عمل</button>
+    <button data-view="impact"><i data-lucide="target"></i> قياس الأثر</button>
+    <button data-view="records"><i data-lucide="files"></i> سجل أوراق العمل</button>
+    <button data-view="teachers"><i data-lucide="users"></i> المعلمون</button>
+    <button data-view="reports"><i data-lucide="bar-chart-3"></i> التقارير والتحليل</button>
+  </div>
+  <div class="school-box">
+    <div>المدرسة</div><strong id="schoolNameDisplay">—</strong>
+    <div style="margin-top:6px;opacity:.7">الرمز: <span id="schoolIdDisplay">—</span></div>
+    <button class="logout" id="logoutBtn">تسجيل الخروج</button>
+  </div>
 </aside>
 
-<main class="main">
+<main>
+<div class="topbar"><div><h2 id="pageTitle">لوحة التحكم</h2><div class="muted">نظام أثر — بيانات المدرسة محفوظة في Firebase</div></div></div>
 
-<header class="topbar">
-
-    <div style="display:flex;align-items:center;gap:12px">
-
-        <button class="mobile-menu" id="mobileMenu">
-            <i data-lucide="menu"></i>
-        </button>
-
-        <div class="topbar-title">
-            <h1 id="pageTitle">لوحة التحكم</h1>
-            <small>إدارة وتقييم وقياس أثر أوراق العمل</small>
-        </div>
-
-    </div>
-
-    <div class="date" id="todayDate"></div>
-
-</header>
-
-<div class="content">
-
-<section class="page active" id="homePage">
-
-    <div class="hero">
-
-        <div>
-
-            <h2>حوّلي تقييم أوراق العمل إلى أثر قابل للقياس</h2>
-
-            <p>
-                منصة رقمية متكاملة تساعدك على تقييم جودة أوراق العمل،
-                قياس أثرها، ومتابعة النتائج والتقارير في مكان واحد.
-            </p>
-
-            <div class="buttons">
-
-                <button class="btn btn-light" onclick="openPage('evaluationPage')">
-                    <i data-lucide="plus"></i>
-                    تقييم ورقة جديدة
-                </button>
-
-                <button class="btn btn-light" onclick="openPage('reportsPage')">
-                    <i data-lucide="files"></i>
-                    عرض التقارير
-                </button>
-
-            </div>
-
-        </div>
-
-        <div class="hero-icon">
-            <i data-lucide="bar-chart-3"></i>
-        </div>
-
-    </div>
-
-    <div class="stats">
-
-        <div class="stat">
-            <div class="icon purple">
-                <i data-lucide="files"></i>
-            </div>
-            <strong id="worksCount">0</strong>
-            <span>إجمالي أوراق العمل</span>
-        </div>
-
-        <div class="stat">
-            <div class="icon blue">
-                <i data-lucide="users"></i>
-            </div>
-            <strong id="teachersCount">0</strong>
-            <span>المعلمات المسجلات</span>
-        </div>
-
-        <div class="stat">
-            <div class="icon green">
-                <i data-lucide="badge-check"></i>
-            </div>
-            <strong id="qualityAverage">0%</strong>
-            <span>متوسط جودة أوراق العمل</span>
-        </div>
-
-        <div class="stat">
-            <div class="icon orange">
-                <i data-lucide="activity"></i>
-            </div>
-            <strong id="impactAverage">0%</strong>
-            <span>متوسط الأثر</span>
-        </div>
-
-    </div>
-
-    <div class="section-title">
-
-        <h2>أحدث أوراق العمل</h2>
-
-        <button class="btn btn-secondary" onclick="openPage('reportsPage')">
-            عرض التقارير
-        </button>
-
-    </div>
-
-    <div class="card">
-
-        <div style="overflow:auto">
-
-            <table class="rating-table">
-
-                <thead>
-
-                    <tr>
-                        <th>الورقة</th>
-                        <th>المعلمة</th>
-                        <th>التاريخ</th>
-                        <th>الجودة</th>
-                        <th>الأثر</th>
-                    </tr>
-
-                </thead>
-
-                <tbody id="recentTable"></tbody>
-
-            </table>
-
-        </div>
-
-    </div>
-
+<section id="home" class="view active">
+  <div class="grid stats">
+    <div class="card stat"><div class="icon"><i data-lucide="users"></i></div><div><strong id="statTeachers">0</strong><span class="muted">المعلمون</span></div></div>
+    <div class="card stat"><div class="icon"><i data-lucide="files"></i></div><div><strong id="statWorksheets">0</strong><span class="muted">أوراق العمل</span></div></div>
+    <div class="card stat"><div class="icon"><i data-lucide="target"></i></div><div><strong id="statImpacts">0</strong><span class="muted">قياسات الأثر</span></div></div>
+    <div class="card stat"><div class="icon"><i data-lucide="star"></i></div><div><strong id="statQuality">0%</strong><span class="muted">متوسط الجودة</span></div></div>
+  </div>
+  <div class="section-title"><h3>آخر أوراق العمل</h3><button class="btn small" onclick="showView('worksheet')">إضافة ورقة عمل</button></div>
+  <div class="card"><div id="recentWorksheets" class="table-wrap"></div></div>
 </section>
 
-<section class="page" id="evaluationPage">
-
-    <div class="section-title">
-        <div>
-            <h2>تقييم ورقة العمل</h2>
-            <small>إضافة ورقة عمل وتقييم أهدافها</small>
-        </div>
-    </div>
-
-    <div class="card">
-
-        <h3>المعلمات</h3>
-
-        <p style="color:#6b7280;font-size:13px;margin-top:5px">
-            أضيفي أسماء المعلمات يدويًا أو استورديها من Excel.
-        </p>
-
-        <div class="teacher-add">
-
-            <input
-                id="teacherInput"
-                type="text"
-                placeholder="اكتبي اسم المعلمة">
-
-            <button class="btn btn-primary" onclick="addTeacher()">
-                <i data-lucide="plus"></i>
-                إضافة
-            </button>
-
-            <button class="btn btn-secondary" onclick="document.getElementById('excelInput').click()">
-                <i data-lucide="file-spreadsheet"></i>
-                استيراد Excel
-            </button>
-
-            <input
-                type="file"
-                id="excelInput"
-                accept=".xlsx,.xls,.csv"
-                style="display:none"
-                onchange="importTeachers(event)">
-
-        </div>
-
-        <div class="teacher-list" id="teacherList"></div>
-
-    </div>
-
-    <div class="card">
-
-        <div class="form-grid">
-
-            <div class="form-group">
-
-                <label>اسم المعلمة</label>
-
-                <select id="teacherSelect">
-                    <option value="">اختاري المعلمة</option>
-                </select>
-
-            </div>
-
-            <div class="form-group">
-
-                <label>تاريخ التقييم</label>
-
-                <input type="date" id="evaluationDate">
-
-            </div>
-
-            <div class="form-group full">
-
-                <label>اسم ورقة العمل</label>
-
-                <input
-                    id="worksheetTitle"
-                    placeholder="مثال: ورقة عمل العمليات الحسابية">
-
-            </div>
-
-            <div class="form-group full">
-
-                <label>أسماء المشاركين / المقيمين</label>
-
-                <input
-                    id="participants"
-                    placeholder="اكتبي الأسماء وافصلي بينها بفاصلة">
-
-            </div>
-
-        </div>
-
-    </div>
-
-    <div class="card">
-
-        <div class="section-title" style="margin-top:0">
-
-            <h3>أهداف ورقة العمل</h3>
-
-            <button class="btn btn-secondary" onclick="addObjective()">
-                <i data-lucide="plus"></i>
-                إضافة هدف
-            </button>
-
-        </div>
-
-        <div id="objectivesContainer"></div>
-
-    </div>
-
-    <div class="card">
-
-        <h3 style="margin-bottom:15px">إرفاق ورقة العمل</h3>
-
-        <div class="file-box">
-
-            <i data-lucide="upload"></i>
-
-            <p>ارفعي صورة أو ملف ورقة العمل</p>
-
-            <input
-                type="file"
-                id="worksheetFile"
-                accept="image/*,.pdf,.doc,.docx">
-
-            <div id="fileName" style="font-size:12px;color:#6b7280;margin-top:8px"></div>
-
-        </div>
-
-    </div>
-
-    <div class="card">
-
-        <h3>تقييم أهداف الورقة</h3>
-
-        <p style="font-size:12px;color:#6b7280;margin-top:5px">
-            5 ممتاز — 4 جيد جدًا — 3 جيد — 2 مقبول — 1 يحتاج إلى تحسين
-        </p>
-
-        <div style="overflow:auto">
-
-            <table class="rating-table">
-
-                <thead>
-
-                    <tr>
-                        <th>الهدف</th>
-                        <th>التقييم</th>
-                    </tr>
-
-                </thead>
-
-                <tbody id="ratingContainer"></tbody>
-
-            </table>
-
-        </div>
-
-        <div class="result-box">
-
-            <div class="result-item">
-                <strong id="qualityAverageResult">0.00</strong>
-                <span>متوسط التقييم</span>
-            </div>
-
-            <div class="result-item">
-                <strong id="qualityPercentageResult">0%</strong>
-                <span>نسبة الجودة</span>
-            </div>
-
-            <div class="result-item">
-                <strong id="qualityLevelResult">—</strong>
-                <span>مستوى الجودة</span>
-            </div>
-
-        </div>
-
-        <div class="buttons">
-
-            <button class="btn btn-primary" onclick="saveWorksheet()">
-                <i data-lucide="save"></i>
-                حفظ ورقة العمل
-            </button>
-
-            <button class="btn btn-light" onclick="resetEvaluation()">
-                مسح النموذج
-            </button>
-
-        </div>
-
-    </div>
-
+<section id="worksheet" class="view">
+ <div class="card">
+  <div class="section-title"><h3>تسجيل ورقة عمل وتقييمها</h3></div>
+  <div class="form-grid">
+   <div class="field"><label>اسم ورقة العمل</label><input id="worksheetName" placeholder="اكتب اسم الورقة"></div>
+   <div class="field"><label>التاريخ</label><input type="date" id="worksheetDate"></div>
+   <div class="field full"><label>المعلمون المشاركون</label><div id="worksheetTeachers" class="checks"></div></div>
+   <div class="field full"><label>عدد المستفيدين / المشاركين</label><input type="number" id="participants" min="0" placeholder="مثال: 25"></div>
+  </div>
+  <div class="section-title"><h3>أهداف التطبيق</h3><button class="btn small secondary" onclick="addObjective()">+ إضافة هدف</button></div>
+  <div id="objectives"></div>
+  <div class="section-title"><h3>تقييم جودة ورقة العمل</h3></div>
+  <div id="ratingArea"></div>
+  <div class="actions"><button class="btn green" onclick="saveWorksheet()">حفظ ورقة العمل</button><button class="btn secondary" onclick="resetWorksheetForm()">مسح النموذج</button></div>
+ </div>
 </section>
 
-<section class="page" id="impactPage">
-
-    <div class="section-title">
-
-        <div>
-            <h2>قياس أثر ورقة العمل</h2>
-            <small>قياس أثر الورقة على الطلبة والتدريس</small>
-        </div>
-
-    </div>
-
-    <div class="card">
-
-        <div class="form-grid">
-
-            <div class="form-group">
-
-                <label>المعلمة</label>
-
-                <select id="impactTeacher" onchange="loadImpactWorks()">
-                    <option value="">اختاري المعلمة</option>
-                </select>
-
-            </div>
-
-            <div class="form-group">
-
-                <label>التاريخ</label>
-
-                <input type="date" id="impactDate" onchange="loadImpactWorks()">
-
-            </div>
-
-            <div class="form-group full">
-
-                <label>ورقة العمل</label>
-
-                <select id="impactWorksheet">
-                    <option value="">اختاري الورقة</option>
-                </select>
-
-            </div>
-
-        </div>
-
-    </div>
-
-    <div class="card" id="impactWorksheetInfo" style="display:none">
-
-        <h3>بيانات التقييم السابق</h3>
-
-        <div class="result-box">
-
-            <div class="result-item">
-                <strong id="previousQuality">0%</strong>
-                <span>جودة الورقة</span>
-            </div>
-
-            <div class="result-item">
-                <strong id="previousDate">—</strong>
-                <span>تاريخ التقييم</span>
-            </div>
-
-            <div class="result-item">
-                <strong id="previousObjectives">0</strong>
-                <span>عدد الأهداف</span>
-            </div>
-
-        </div>
-
-    </div>
-
-    <div class="card">
-
-        <h3>استبيان قياس الأثر</h3>
-
-        <p style="font-size:12px;color:#6b7280;margin-top:5px">
-            قيّمي أثر الورقة من 1 إلى 5.
-        </p>
-
-        <div id="impactQuestions"></div>
-
-        <div class="result-box">
-
-            <div class="result-item">
-                <strong id="impactAverageResult">0.00</strong>
-                <span>متوسط الأثر</span>
-            </div>
-
-            <div class="result-item">
-                <strong id="impactPercentageResult">0%</strong>
-                <span>نسبة الأثر</span>
-            </div>
-
-            <div class="result-item">
-                <strong id="impactLevelResult">—</strong>
-                <span>مستوى الأثر</span>
-            </div>
-
-        </div>
-
-        <div class="buttons">
-
-            <button class="btn btn-success" onclick="saveImpact()">
-                <i data-lucide="save"></i>
-                حفظ قياس الأثر
-            </button>
-
-            <button
-                type="button"
-                class="btn btn-light"
-                onclick="resetImpactForm()">
-                مسح الاستبيان
-            </button>
-
-        </div>
-
-    </div>
-
+<section id="impact" class="view">
+ <div class="card">
+  <div class="section-title"><h3>قياس أثر تطبيق ورقة العمل</h3></div>
+  <div class="form-grid">
+   <div class="field"><label>ورقة العمل</label><select id="impactWorksheet"></select></div>
+   <div class="field"><label>التاريخ</label><input type="date" id="impactDate"></div>
+  </div>
+  <div class="section-title"><h3>مؤشرات الأثر</h3></div>
+  <div id="impactQuestions"></div>
+  <div class="actions"><button class="btn green" onclick="saveImpact()">حفظ قياس الأثر</button></div>
+ </div>
 </section>
 
-<section class="page" id="reportsPage">
-
-    <div class="section-title">
-
-        <div>
-            <h2>التقارير والتحليلات</h2>
-            <small>تقارير أوراق العمل وقياس أثرها</small>
-        </div>
-
-        <button class="btn btn-primary no-print" onclick="window.print()">
-            <i data-lucide="printer"></i>
-            طباعة
-        </button>
-
-    </div>
-
-    <div class="card no-print">
-
-        <div class="form-grid">
-
-            <div class="form-group">
-
-                <label>بحث باسم الورقة</label>
-
-                <input
-                    id="reportSearch"
-                    placeholder="اكتبي اسم الورقة"
-                    oninput="renderReports()">
-
-            </div>
-
-            <div class="form-group">
-
-                <label>المعلمة</label>
-
-                <select id="reportTeacherFilter" onchange="renderReports()">
-                    <option value="">جميع المعلمات</option>
-                </select>
-
-            </div>
-
-        </div>
-
-    </div>
-
-    <div id="reportsContainer" class="report-list"></div>
-
+<section id="records" class="view">
+ <div class="card">
+  <div class="section-title"><h3>سجل أوراق العمل</h3><div class="actions" style="margin:0"><button class="btn small" onclick="printRecords()">طباعة</button></div></div>
+  <div class="form-grid">
+   <div class="field"><label>بحث</label><input id="recordSearch" oninput="renderRecords()" placeholder="اسم الورقة أو المعلم"></div>
+   <div class="field"><label>من تاريخ</label><input type="date" id="recordFrom" onchange="renderRecords()"></div>
+   <div class="field"><label>إلى تاريخ</label><input type="date" id="recordTo" onchange="renderRecords()"></div>
+  </div>
+  <div id="recordsTable" class="table-wrap" style="margin-top:18px"></div>
+ </div>
 </section>
 
-</div>
-</main>
+<section id="teachers" class="view">
+ <div class="card">
+  <div class="section-title"><h3>إدارة المعلمين</h3></div>
+  <div class="form-grid">
+   <div class="field"><label>اسم المعلم / المعلمة</label><input id="newTeacherName" placeholder="اكتب الاسم"></div>
+   <div class="field"><label>استيراد Excel / CSV</label><input type="file" id="excelTeacherInput" accept=".xlsx,.xls,.csv"></div>
+  </div>
+  <div class="actions"><button class="btn" onclick="addTeacher()">إضافة المعلم</button><button class="btn secondary" onclick="importTeachers()">استيراد الملف</button></div>
+  <div id="teachersList" class="teacher-list"></div>
+ </div>
+</section>
 
+<section id="reports" class="view">
+ <div class="grid" style="grid-template-columns:repeat(2,minmax(0,1fr))">
+  <div class="card"><h3>جودة أوراق العمل</h3><canvas id="qualityChart"></canvas></div>
+  <div class="card"><h3>أثر التطبيق</h3><canvas id="impactChart"></canvas></div>
+ </div>
+ <div class="card" style="margin-top:18px"><h3>ملخص التحليل</h3><div id="analysisSummary"></div></div>
+</section>
+</main></div>
+
+<div id="firebaseNotice" style="display:none;position:fixed;right:20px;left:20px;top:20px;z-index:500;background:#fff3cd;color:#664d03;border:1px solid #ffecb5;border-radius:12px;padding:12px 16px;text-align:center;box-shadow:0 8px 25px rgba(0,0,0,.12)">لضمان عمل تسجيل الدخول وFirebase، افتح الموقع من GitHub Pages أو من Live Server في VS Code، وليس بالنقر المزدوج على ملف HTML.</div>
+<div id="loginModal" class="modal login-modal">
+ <div class="modal-card login-card">
+  <div class="login-logo">أ</div>
+  <h2>نظام أثر</h2>
+  <p>تسجيل الدخول للوصول إلى بيانات المدرسة</p>
+  <div class="field" style="text-align:right"><label>البريد الإلكتروني</label><input id="loginEmail" type="email" autocomplete="username" placeholder="البريد الإلكتروني"></div>
+  <div class="field" style="text-align:right;margin-top:12px"><label>كلمة المرور</label><input id="loginPassword" type="password" autocomplete="current-password" placeholder="كلمة المرور"></div>
+  <div id="loginError" class="error"></div>
+  <button class="btn" style="width:100%;margin-top:8px" id="loginBtn">دخول</button>
+ </div>
 </div>
 
-<div class="modal" id="reportModal">
-
-    <div class="modal-content">
-
-        <div class="modal-head">
-
-            <h2 id="modalTitle">تقرير ورقة العمل</h2>
-
-            <button class="close" type="button" onclick="closeModal()">
-                ✕
-            </button>
-
-        </div>
-
-        <div id="modalBody"></div>
-
-    </div>
-
-</div>
-
-<div class="toast" id="toast"></div>
+<div id="toast" class="toast"></div>
 
 <script>
-
-/* =====================================================
-   DATABASE
-===================================================== */
-
-const STORAGE_KEY = "athar_worksheet_database_v1";
-
-let db = {
-    teachers: [],
-    worksheets: [],
-    impacts: []
-};
-
-function normalizeDatabase(){
-
-    if(!db || typeof db !== "object"){
-        db = {
-            teachers: [],
-            worksheets: [],
-            impacts: []
-        };
-    }
-
-    if(!Array.isArray(db.teachers)){
-        db.teachers = [];
-    }
-
-    if(!Array.isArray(db.worksheets)){
-        db.worksheets = [];
-    }
-
-    if(!Array.isArray(db.impacts)){
-        db.impacts = [];
-    }
-}
-
-function loadDatabase(){
-
-    try{
-
-        const saved = localStorage.getItem(STORAGE_KEY);
-
-        if(saved){
-            db = JSON.parse(saved);
-        }
-
-        normalizeDatabase();
-
-    }catch(error){
-
-        console.error("Database error:",error);
-
-        db = {
-            teachers: [],
-            worksheets: [],
-            impacts: []
-        };
-
-    }
-
-}
-
-function saveDatabase(){
-
-    try{
-
-        localStorage.setItem(
-            STORAGE_KEY,
-            JSON.stringify(db)
-        );
-
-        return true;
-
-    }catch(error){
-
-        console.error("Save error:",error);
-
-        showToast("تعذر حفظ البيانات");
-
-        return false;
-
-    }
-
-}
-
-
-/* =====================================================
-   INITIALIZATION
-===================================================== */
-
-document.addEventListener("DOMContentLoaded",()=>{
-
-    loadDatabase();
-
-    setToday();
-
-    setDefaultDate();
-
-    addObjective();
-
-    createImpactQuestions();
-
-    renderAll();
-
-    lucide.createIcons();
-
-});
-
-
-/* =====================================================
-   NAVIGATION
-===================================================== */
-
-const pageNames = {
-
-    homePage:"لوحة التحكم",
-    evaluationPage:"تقييم ورقة العمل",
-    impactPage:"قياس الأثر",
-    reportsPage:"التقارير والتحليلات"
-
-};
-
-document.querySelectorAll(".nav button").forEach(button=>{
-
-    button.addEventListener("click",()=>{
-
-        openPage(button.dataset.page);
-
-    });
-
-});
-
-
-function openPage(pageId){
-
-    document.querySelectorAll(".page").forEach(page=>{
-
-        page.classList.remove("active");
-
-    });
-
-    const page =
-        document.getElementById(pageId);
-
-    if(page){
-        page.classList.add("active");
-    }
-
-    document.querySelectorAll(".nav button").forEach(button=>{
-
-        button.classList.toggle(
-            "active",
-            button.dataset.page === pageId
-        );
-
-    });
-
-    const title =
-        document.getElementById("pageTitle");
-
-    if(title){
-        title.textContent =
-            pageNames[pageId] || "أثر";
-    }
-
-    document.getElementById("sidebar")
-        .classList.remove("open");
-
-    if(pageId === "reportsPage"){
-        renderReports();
-    }
-
-    if(pageId === "homePage"){
-        renderHome();
-    }
-
-    if(pageId === "impactPage"){
-        renderTeachers();
-    }
-
-    refreshIcons();
-
-}
-
-
-/* =====================================================
-   MOBILE
-===================================================== */
-
-document.getElementById("mobileMenu")
-.addEventListener("click",()=>{
-
-    document.getElementById("sidebar")
-    .classList.toggle("open");
-
-});
-
-
-/* =====================================================
-   ICONS
-===================================================== */
-
-function refreshIcons(){
-
-    if(
-        typeof lucide !== "undefined" &&
-        typeof lucide.createIcons === "function"
-    ){
-
-        lucide.createIcons();
-
-    }
-
-}
-
-
-/* =====================================================
-   DATE
-===================================================== */
-
-function setToday(){
-
-    const date = new Date();
-
-    document.getElementById("todayDate").textContent =
-        date.toLocaleDateString(
-            "ar-OM",
-            {
-                weekday:"long",
-                year:"numeric",
-                month:"long",
-                day:"numeric"
-            }
-        );
-
-}
-
-
-function getTodayISO(){
-
-    const now = new Date();
-
-    const offset =
-        now.getTimezoneOffset();
-
-    const local =
-        new Date(
-            now.getTime() -
-            offset * 60000
-        );
-
-    return local
-        .toISOString()
-        .split("T")[0];
-
-}
-
-
-function setDefaultDate(){
-
-    const today =
-        getTodayISO();
-
-    document.getElementById(
-        "evaluationDate"
-    ).value = today;
-
-    document.getElementById(
-        "impactDate"
-    ).value = today;
-
-}
-
-
-/* =====================================================
-   TEACHERS
-===================================================== */
-
-function addTeacher(){
-
-    const input =
-        document.getElementById("teacherInput");
-
-    const name =
-        input.value.trim();
-
-    if(!name){
-
-        showToast("اكتبي اسم المعلمة أولاً");
-
-        input.focus();
-
-        return;
-
-    }
-
-    const exists =
-        db.teachers.some(
-            teacher =>
-                String(teacher).trim().toLowerCase() ===
-                name.toLowerCase()
-        );
-
-    if(exists){
-
-        showToast("الاسم موجود مسبقًا");
-
-        input.focus();
-
-        return;
-
-    }
-
-    db.teachers.push(name);
-
-    if(!saveDatabase()) return;
-
-    input.value="";
-
-    renderTeachers();
-
-    refreshIcons();
-
-    showToast("تمت إضافة المعلمة بنجاح");
-
-}
-
-
-function removeTeacherByButton(button){
-
-    if(!button) return;
-
-    const index =
-        Number(button.dataset.index);
-
-    if(
-        !Number.isInteger(index) ||
-        index < 0 ||
-        index >= db.teachers.length
-    ){
-
-        showToast("تعذر تحديد اسم المعلمة");
-
-        return;
-
-    }
-
-    const name =
-        db.teachers[index];
-
-    removeTeacher(name);
-
-}
-
-
-function removeTeacher(name){
-
-    if(!name) return;
-
-    const confirmed =
-        confirm(
-            `هل أنتِ متأكدة من حذف اسم المعلمة «${name}»؟\n\nلن يتم حذف أوراق العمل السابقة المسجلة باسمها.`
-        );
-
-    if(!confirmed) return;
-
-    const index =
-        db.teachers.findIndex(
-            teacher => teacher === name
-        );
-
-    if(index === -1){
-
-        showToast("تعذر العثور على اسم المعلمة");
-
-        return;
-
-    }
-
-    db.teachers.splice(index,1);
-
-    if(!saveDatabase()) return;
-
-    renderTeachers();
-    renderAll();
-
-    showToast("تم حذف اسم المعلمة بنجاح");
-
-}
-
-
-function renderTeachers(){
-
-    const list =
-        document.getElementById("teacherList");
-
-    const select =
-        document.getElementById("teacherSelect");
-
-    const impactSelect =
-        document.getElementById("impactTeacher");
-
-    const filter =
-        document.getElementById("reportTeacherFilter");
-
-    if(!list || !select || !impactSelect || !filter){
-        return;
-    }
-
-    list.innerHTML = "";
-
-    db.teachers.forEach((name,index)=>{
-
-        const tag =
-            document.createElement("div");
-
-        tag.className="teacher-tag";
-
-        const span =
-            document.createElement("span");
-
-        span.textContent = name;
-
-        const deleteButton =
-            document.createElement("button");
-
-        deleteButton.type="button";
-
-        deleteButton.title="حذف الاسم";
-
-        deleteButton.dataset.index = index;
-
-        deleteButton.innerHTML="×";
-
-        deleteButton.addEventListener(
-            "click",
-            function(){
-                removeTeacherByButton(this);
-            }
-        );
-
-        tag.appendChild(span);
-        tag.appendChild(deleteButton);
-
-        list.appendChild(tag);
-
-    });
-
-    const currentTeacher =
-        select.value;
-
-    const currentImpactTeacher =
-        impactSelect.value;
-
-    const currentFilter =
-        filter.value;
-
-    select.innerHTML =
-        `<option value="">اختاري المعلمة</option>`;
-
-    impactSelect.innerHTML =
-        `<option value="">اختاري المعلمة</option>`;
-
-    filter.innerHTML =
-        `<option value="">جميع المعلمات</option>`;
-
-    db.teachers.forEach(name=>{
-
-        select.appendChild(
-            new Option(name,name)
-        );
-
-        impactSelect.appendChild(
-            new Option(name,name)
-        );
-
-        filter.appendChild(
-            new Option(name,name)
-        );
-
-    });
-
-    if(
-        db.teachers.includes(currentTeacher)
-    ){
-        select.value=currentTeacher;
-    }
-
-    if(
-        db.teachers.includes(currentImpactTeacher)
-    ){
-        impactSelect.value=currentImpactTeacher;
-    }
-
-    if(
-        currentFilter === "" ||
-        db.teachers.includes(currentFilter)
-    ){
-        filter.value=currentFilter;
-    }
-
-    refreshIcons();
-
-}
-
-
-/* =====================================================
-   EXCEL IMPORT
-===================================================== */
-
-function importTeachers(event){
-
-    const file =
-        event.target.files[0];
-
-    if(!file) return;
-
-    const reader =
-        new FileReader();
-
-    reader.onload = function(e){
-
-        try{
-
-            const workbook =
-                XLSX.read(
-                    e.target.result,
-                    {type:"array"}
-                );
-
-            const sheet =
-                workbook.Sheets[
-                    workbook.SheetNames[0]
-                ];
-
-            const rows =
-                XLSX.utils.sheet_to_json(
-                    sheet,
-                    {header:1}
-                );
-
-            let added = 0;
-
-            rows.forEach(row=>{
-
-                if(!row || !row.length) return;
-
-                const name =
-                    String(row[0] || "").trim();
-
-                if(
-                    name &&
-                    !db.teachers.some(
-                        teacher =>
-                            String(teacher)
-                            .trim()
-                            .toLowerCase() ===
-                            name.toLowerCase()
-                    )
-                ){
-
-                    db.teachers.push(name);
-
-                    added++;
-
-                }
-
-            });
-
-            if(!saveDatabase()) return;
-
-            renderTeachers();
-
-            showToast(
-                added
-                    ? `تم استيراد ${added} اسم بنجاح`
-                    : "لم تتم إضافة أسماء جديدة"
-            );
-
-        }catch(error){
-
-            console.error(error);
-
-            showToast(
-                "تعذر قراءة ملف Excel"
-            );
-
-        }
-
-    };
-
-    reader.readAsArrayBuffer(file);
-
-    event.target.value="";
-
-}
-
-
-/* =====================================================
-   OBJECTIVES
-===================================================== */
-
-let objectiveCounter = 0;
-
-function addObjective(value=""){
-
-    objectiveCounter++;
-
-    const container =
-        document.getElementById(
-            "objectivesContainer"
-        );
-
-    if(!container) return;
-
-    const row =
-        document.createElement("div");
-
-    row.className="objective-row";
-
-    row.dataset.id =
-        objectiveCounter;
-
-    const input =
-        document.createElement("input");
-
-    input.className="objective-input";
-
-    input.value=value;
-
-    input.placeholder="اكتبي هدف ورقة العمل";
-
-    const button =
-        document.createElement("button");
-
-    button.type="button";
-
-    button.className="btn btn-danger";
-
-    button.title="حذف الهدف";
-
-    button.innerHTML="×";
-
-    button.addEventListener(
-        "click",
-        function(){
-
-            removeObjective(this);
-
-        }
-    );
-
-    row.appendChild(input);
-    row.appendChild(button);
-
-    container.appendChild(row);
-
-    renderRatings();
-
-    refreshIcons();
-
-}
-
-
-function removeObjective(button){
-
-    if(!button) return;
-
-    const row =
-        button.closest(".objective-row");
-
-    if(!row) return;
-
-    row.remove();
-
-    renderRatings();
-
-}
-
-
-/* =====================================================
-   RATINGS
-===================================================== */
-
-function getObjectives(){
-
-    return [
-        ...document.querySelectorAll(".objective-input")
-    ]
-    .map(input=>input.value.trim())
-    .filter(Boolean);
-
-}
-
-
-function renderRatings(){
-
-    const container =
-        document.getElementById("ratingContainer");
-
-    if(!container) return;
-
-    const objectives =
-        getObjectives();
-
-    container.innerHTML="";
-
-    objectives.forEach((objective,index)=>{
-
-        const row =
-            document.createElement("tr");
-
-        row.innerHTML=`
-
-            <td>
-                ${escapeHTML(objective)}
-            </td>
-
-            <td>
-
-                <div class="rating-options">
-
-                    ${[1,2,3,4,5].map(value=>`
-
-                        <label>
-
-                            <input
-                                type="radio"
-                                name="objective_${index}"
-                                value="${value}">
-
-                            <span>${value}</span>
-
-                        </label>
-
-                    `).join("")}
-
-                </div>
-
-            </td>
-
-        `;
-
-        container.appendChild(row);
-
-    });
-
-    document
-        .querySelectorAll(
-            '#ratingContainer input[type="radio"]'
-        )
-        .forEach(input=>{
-
-            input.addEventListener(
-                "change",
-                calculateQuality
-            );
-
-        });
-
-    calculateQuality();
-
-    refreshIcons();
-
-}
-
-
-document.addEventListener("input",(event)=>{
-
-    if(
-        event.target &&
-        event.target.classList.contains("objective-input")
-    ){
-
-        renderRatings();
-
-    }
-
-});
-
-
-/* =====================================================
-   QUALITY CALCULATION
-===================================================== */
-
-function getQualityRatings(){
-
-    const objectives =
-        getObjectives();
-
-    return objectives.map((_,index)=>{
-
-        const checked =
-            document.querySelector(
-                `input[name="objective_${index}"]:checked`
-            );
-
-        return checked
-            ? Number(checked.value)
-            : 0;
-
-    });
-
-}
-
-
-function calculateQuality(){
-
-    const ratings =
-        getQualityRatings();
-
-    const valid =
-        ratings.filter(value=>value>0);
-
-    if(!valid.length){
-
-        document.getElementById(
-            "qualityAverageResult"
-        ).textContent="0.00";
-
-        document.getElementById(
-            "qualityPercentageResult"
-        ).textContent="0%";
-
-        document.getElementById(
-            "qualityLevelResult"
-        ).textContent="—";
-
-        return {
-            average:0,
-            percentage:0,
-            level:""
-        };
-
-    }
-
-    const average =
-        valid.reduce(
-            (a,b)=>a+b,
-            0
-        ) / valid.length;
-
-    const percentage =
-        (average / 5) * 100;
-
-    const level =
-        getLevel(percentage);
-
-    document.getElementById(
-        "qualityAverageResult"
-    ).textContent =
-        average.toFixed(2);
-
-    document.getElementById(
-        "qualityPercentageResult"
-    ).textContent =
-        Math.round(percentage)+"%";
-
-    document.getElementById(
-        "qualityLevelResult"
-    ).textContent =
-        level;
-
-    return {
-        average,
-        percentage,
-        level
-    };
-
-}
-
-
-/* =====================================================
-   FILE
-===================================================== */
-
-document.getElementById("worksheetFile")
-.addEventListener("change",function(){
-
-    const file =
-        this.files[0];
-
-    document.getElementById("fileName")
-    .textContent =
-        file
-            ? file.name
-            : "";
-
-});
-
-
-/* =====================================================
-   SAVE WORKSHEET
-===================================================== */
-
-function saveWorksheet(){
-
-    const teacher =
-        document.getElementById(
-            "teacherSelect"
-        ).value;
-
-    const title =
-        document.getElementById(
-            "worksheetTitle"
-        ).value.trim();
-
-    const date =
-        document.getElementById(
-            "evaluationDate"
-        ).value;
-
-    const participants =
-        document.getElementById(
-            "participants"
-        ).value.trim();
-
-    const objectives =
-        getObjectives();
-
-    if(!teacher){
-
-        showToast("اختاري اسم المعلمة");
-
-        return;
-
-    }
-
-    if(!title){
-
-        showToast("اكتبي اسم ورقة العمل");
-
-        return;
-
-    }
-
-    if(!date){
-
-        showToast("اختاري التاريخ");
-
-        return;
-
-    }
-
-    if(!objectives.length){
-
-        showToast("أضيفي هدفًا واحدًا على الأقل");
-
-        return;
-
-    }
-
-    const ratings =
-        getQualityRatings();
-
-    if(
-        ratings.length !== objectives.length ||
-        ratings.some(value => value === 0)
-    ){
-
-        showToast(
-            "يجب تقييم جميع الأهداف"
-        );
-
-        return;
-
-    }
-
-    const quality =
-        calculateQuality();
-
-    const file =
-        document.getElementById(
-            "worksheetFile"
-        ).files[0];
-
-    const worksheet = {
-
-        id:Date.now(),
-
-        teacher,
-
-        title,
-
-        date,
-
-        participants,
-
-        objectives,
-
-        ratings,
-
-        qualityAverage:
-            quality.average,
-
-        qualityPercentage:
-            quality.percentage,
-
-        qualityLevel:
-            quality.level,
-
-        fileName:
-            file ? file.name : "",
-
-        impactId:null,
-
-        createdAt:
-            new Date().toISOString()
-
-    };
-
-    db.worksheets.push(worksheet);
-
-    if(!saveDatabase()) return;
-
-    showToast(
-        "تم حفظ ورقة العمل بنجاح"
-    );
-
-    resetEvaluation();
-
-    renderAll();
-
-    setTimeout(
-        ()=>openPage("reportsPage"),
-        600
-    );
-
-}
-
-
-/* =====================================================
-   RESET EVALUATION
-===================================================== */
-
-function resetEvaluation(){
-
-    document.getElementById(
-        "worksheetTitle"
-    ).value="";
-
-    document.getElementById(
-        "participants"
-    ).value="";
-
-    document.getElementById(
-        "objectivesContainer"
-    ).innerHTML="";
-
-    document.getElementById(
-        "worksheetFile"
-    ).value="";
-
-    document.getElementById(
-        "fileName"
-    ).textContent="";
-
-    objectiveCounter=0;
-
-    addObjective();
-
-    document.getElementById(
-        "teacherSelect"
-    ).value="";
-
-    setDefaultDate();
-
-    calculateQuality();
-
-}
-
-
-/* =====================================================
-   IMPACT QUESTIONS
-===================================================== */
-
-const impactQuestionList = [
-
-    "تحسن مستوى تعلم الطلبة بعد استخدام الورقة",
-
-    "زاد تفاعل الطلبة ومشاركتهم أثناء التعلم",
-
-    "ساعدت الورقة على تحقيق أهداف الدرس",
-
-    "دعمت الورقة ممارسات المعلمة التدريسية",
-
-    "ساهمت الورقة في تطوير الممارسات المهنية للمعلمة",
-
-    "ظهر أثر واضح للورقة على أداء الطلبة"
-
+const STORAGE_KEY="athar_worksheet_database_v1";
+let db={teachers:[],worksheets:[],impacts:[]};
+let currentSchoolId=null,currentSchoolName="المدرسة",currentUser=null;
+let qualityChart=null,impactChart=null;
+
+const IMPACT_QUESTIONS=[
+ "تحقق الهدف التعليمي من تطبيق ورقة العمل",
+ "ساهمت ورقة العمل في رفع مستوى تعلم الطلبة",
+ "ساهمت في زيادة مشاركة الطلبة وتفاعلهم",
+ "ساعدت المعلم على اكتشاف جوانب القوة والاحتياج",
+ "كان لورقة العمل أثر واضح على الممارسة التعليمية",
+ "يوصى بالاستمرار في تطوير وتطبيق هذا النوع من أوراق العمل"
+];
+const RATING_ITEMS=[
+ "وضوح التعليمات",
+ "ارتباط الورقة بالهدف",
+ "تنوع الأنشطة والأسئلة",
+ "مناسبة مستوى الصعوبة",
+ "تنظيم وتنسيق الورقة",
+ "قابلية الورقة للتطبيق",
+ "مراعاة الفروق الفردية",
+ "جودة التقويم والتغذية الراجعة"
 ];
 
-
-function createImpactQuestions(){
-
-    const container =
-        document.getElementById(
-            "impactQuestions"
-        );
-
-    container.innerHTML="";
-
-    impactQuestionList.forEach(
-        (question,index)=>{
-
-            const row =
-                document.createElement("div");
-
-            row.style.marginTop="20px";
-
-            row.innerHTML=`
-
-                <strong style="font-size:14px">
-                    ${index+1}. ${escapeHTML(question)}
-                </strong>
-
-                <div class="rating-options"
-                     style="margin-top:10px">
-
-                    ${[1,2,3,4,5].map(value=>`
-
-                        <label>
-
-                            <input
-                                type="radio"
-                                name="impact_${index}"
-                                value="${value}">
-
-                            <span>${value}</span>
-
-                        </label>
-
-                    `).join("")}
-
-                </div>
-
-            `;
-
-            container.appendChild(row);
-
-        }
-    );
-
-    container
-        .querySelectorAll(
-            'input[type="radio"]'
-        )
-        .forEach(input=>{
-
-            input.addEventListener(
-                "change",
-                calculateImpact
-            );
-
-        });
-
-    calculateImpact();
-
-    refreshIcons();
-
+function normalizeDatabase(){
+ db=db&&typeof db==="object"?db:{};
+ if(!Array.isArray(db.teachers))db.teachers=[];
+ if(!Array.isArray(db.worksheets))db.worksheets=[];
+ if(!Array.isArray(db.impacts))db.impacts=[];
 }
-
-
-function getImpactRatings(){
-
-    return impactQuestionList.map(
-        (_,index)=>{
-
-            const checked =
-                document.querySelector(
-                    `input[name="impact_${index}"]:checked`
-                );
-
-            return checked
-                ? Number(checked.value)
-                : 0;
-
-        }
-    );
-
+function localBackup(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(db))}catch(e){}}
+async function saveDatabase(){
+ normalizeDatabase();
+ localBackup();
+ if(!window.atharFirebase?.saveData) throw new Error("Firebase غير جاهز بعد");
+ if(!currentSchoolId) throw new Error("schoolId missing");
+ await window.atharFirebase.saveData(db);
+ return true;
 }
-
-
-function calculateImpact(){
-
-    const ratings =
-        getImpactRatings();
-
-    const valid =
-        ratings.filter(
-            value=>value>0
-        );
-
-    if(!valid.length){
-
-        document.getElementById(
-            "impactAverageResult"
-        ).textContent="0.00";
-
-        document.getElementById(
-            "impactPercentageResult"
-        ).textContent="0%";
-
-        document.getElementById(
-            "impactLevelResult"
-        ).textContent="—";
-
-        return {
-            average:0,
-            percentage:0,
-            level:""
-        };
-
-    }
-
-    const average =
-        valid.reduce(
-            (a,b)=>a+b,
-            0
-        ) / valid.length;
-
-    const percentage =
-        (average / 5) * 100;
-
-    const level =
-        getLevel(percentage);
-
-    document.getElementById(
-        "impactAverageResult"
-    ).textContent =
-        average.toFixed(2);
-
-    document.getElementById(
-        "impactPercentageResult"
-    ).textContent =
-        Math.round(percentage)+"%";
-
-    document.getElementById(
-        "impactLevelResult"
-    ).textContent =
-        level;
-
-    return {
-        average,
-        percentage,
-        level
-    };
-
+function showToast(msg){const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2800)}
+function escapeHTML(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+function formatDate(v){if(!v)return "—";try{return new Date(v+"T00:00:00").toLocaleDateString("ar-OM")}catch{return v}}
+function setToday(){const d=new Date().toISOString().slice(0,10);document.getElementById("worksheetDate").value=d;document.getElementById("impactDate").value=d}
+function showView(id){
+ document.querySelectorAll(".view").forEach(x=>x.classList.remove("active"));
+ document.getElementById(id).classList.add("active");
+ document.querySelectorAll(".nav button").forEach(x=>x.classList.toggle("active",x.dataset.view===id));
+ const titles={home:"لوحة التحكم",worksheet:"تسجيل ورقة عمل",impact:"قياس الأثر",records:"سجل أوراق العمل",teachers:"المعلمون",reports:"التقارير والتحليل"};
+ document.getElementById("pageTitle").textContent=titles[id]||"أثر";
+ if(id==="impact")renderImpactSelect();
+ if(id==="reports")renderReports();
 }
+window.showView=showView;
 
+document.querySelectorAll(".nav button").forEach(b=>b.addEventListener("click",()=>showView(b.dataset.view)));
+document.getElementById("logoutBtn").addEventListener("click",()=>window.atharFirebase?.logout());
 
-/* =====================================================
-   LOAD IMPACT WORKSHEETS
-===================================================== */
-
-function loadImpactWorks(){
-
-    const teacher =
-        document.getElementById(
-            "impactTeacher"
-        ).value;
-
-    const date =
-        document.getElementById(
-            "impactDate"
-        ).value;
-
-    const select =
-        document.getElementById(
-            "impactWorksheet"
-        );
-
-    select.innerHTML =
-        `<option value="">اختاري الورقة</option>`;
-
-    document.getElementById(
-        "impactWorksheetInfo"
-    ).style.display="none";
-
-    if(!teacher || !date){
-
-        return;
-
-    }
-
-    const works =
-        db.worksheets.filter(
-            worksheet =>
-                worksheet.teacher === teacher &&
-                worksheet.date === date
-        );
-
-    works.forEach(work=>{
-
-        const option =
-            new Option(
-                work.title,
-                work.id
-            );
-
-        select.appendChild(option);
-
-    });
-
-    if(!works.length){
-
-        showToast(
-            "لا توجد ورقة مسجلة لهذه المعلمة في هذا التاريخ"
-        );
-
-    }
-
+function renderAll(){renderTeachers();renderTeacherChecks();renderObjectives();renderRatingArea();renderImpactQuestions();renderImpactSelect();renderHome();renderRecords();renderReports();lucide.createIcons()}
+function renderHome(){
+ document.getElementById("statTeachers").textContent=db.teachers.length;
+ document.getElementById("statWorksheets").textContent=db.worksheets.length;
+ document.getElementById("statImpacts").textContent=db.impacts.length;
+ const avg=db.worksheets.length?db.worksheets.reduce((a,w)=>a+(Number(w.qualityPercentage)||0),0)/db.worksheets.length:0;
+ document.getElementById("statQuality").textContent=Math.round(avg)+"%";
+ const recent=[...db.worksheets].sort((a,b)=>new Date(b.createdAt||0)-new Date(a.createdAt||0)).slice(0,8);
+ document.getElementById("recentWorksheets").innerHTML=recent.length?`<table class="table"><thead><tr><th>الورقة</th><th>المعلمون</th><th>التاريخ</th><th>الجودة</th></tr></thead><tbody>${recent.map(w=>`<tr><td>${escapeHTML(w.title)}</td><td>${escapeHTML((w.teacher||[]).join("، "))}</td><td>${formatDate(w.date)}</td><td><span class="pill">${Math.round(w.qualityPercentage||0)}%</span></td></tr>`).join("")}</tbody></table>`:`<div class="empty">لا توجد أوراق عمل مسجلة بعد</div>`;
 }
-
-
-document.getElementById("impactWorksheet")
-.addEventListener("change",function(){
-
-    loadSelectedImpactWorksheet();
-
-});
-
-
-function loadSelectedImpactWorksheet(){
-
-    const id =
-        Number(
-            document.getElementById(
-                "impactWorksheet"
-            ).value
-        );
-
-    const work =
-        db.worksheets.find(
-            item=>Number(item.id)===id
-        );
-
-    const box =
-        document.getElementById(
-            "impactWorksheetInfo"
-        );
-
-    if(!work){
-
-        box.style.display="none";
-
-        return;
-
-    }
-
-    box.style.display="block";
-
-    document.getElementById(
-        "previousQuality"
-    ).textContent =
-        Math.round(
-            Number(work.qualityPercentage)||0
-        )+"%";
-
-    document.getElementById(
-        "previousDate"
-    ).textContent =
-        formatDate(work.date);
-
-    document.getElementById(
-        "previousObjectives"
-    ).textContent =
-        Array.isArray(work.objectives)
-            ? work.objectives.length
-            : 0;
-
+function renderTeachers(){
+ const box=document.getElementById("teachersList");
+ if(!db.teachers.length){box.innerHTML='<div class="empty">لم تتم إضافة معلمين بعد</div>';return}
+ box.innerHTML=db.teachers.map((t,i)=>`<div class="teacher-row"><span>${escapeHTML(t)}</span><button class="btn red small" onclick="removeTeacher(${i})">حذف</button></div>`).join("");
 }
-
-
-/* =====================================================
-   SAVE IMPACT
-===================================================== */
-
-function saveImpact(){
-
-    const teacher =
-        document.getElementById(
-            "impactTeacher"
-        ).value;
-
-    const worksheetId =
-        Number(
-            document.getElementById(
-                "impactWorksheet"
-            ).value
-        );
-
-    const date =
-        document.getElementById(
-            "impactDate"
-        ).value;
-
-    if(!teacher){
-
-        showToast("اختاري المعلمة");
-
-        return;
-
-    }
-
-    if(!worksheetId){
-
-        showToast("اختاري ورقة العمل");
-
-        return;
-
-    }
-
-    if(!date){
-
-        showToast("اختاري التاريخ");
-
-        return;
-
-    }
-
-    const ratings =
-        getImpactRatings();
-
-    if(
-        ratings.length !== impactQuestionList.length ||
-        ratings.some(
-            value=>value===0
-        )
-    ){
-
-        showToast(
-            "يجب الإجابة عن جميع عناصر قياس الأثر"
-        );
-
-        return;
-
-    }
-
-    const result =
-        calculateImpact();
-
-    const existingIndex =
-        db.impacts.findIndex(
-            impact =>
-                Number(impact.worksheetId) === worksheetId
-        );
-
-    const impact = {
-
-        id:
-            existingIndex >= 0
-                ? db.impacts[existingIndex].id
-                : Date.now(),
-
-        worksheetId,
-
-        teacher,
-
-        date,
-
-        ratings,
-
-        average:
-            result.average,
-
-        percentage:
-            result.percentage,
-
-        level:
-            result.level,
-
-        createdAt:
-            new Date().toISOString()
-
-    };
-
-    if(existingIndex >= 0){
-
-        db.impacts[existingIndex] =
-            impact;
-
-    }else{
-
-        db.impacts.push(impact);
-
-    }
-
-    const worksheet =
-        db.worksheets.find(
-            item=>Number(item.id)===worksheetId
-        );
-
-    if(worksheet){
-
-        worksheet.impactId =
-            impact.id;
-
-    }
-
-    if(!saveDatabase()) return;
-
-    renderAll();
-
-    showToast(
-        existingIndex >= 0
-            ? "تم تحديث قياس الأثر بنجاح"
-            : "تم حفظ قياس الأثر بنجاح"
-    );
-
+function renderTeacherChecks(){
+ const box=document.getElementById("worksheetTeachers");
+ box.innerHTML=db.teachers.length?db.teachers.map((t,i)=>`<label class="check"><input type="checkbox" value="${escapeHTML(t)}"> ${escapeHTML(t)}</label>`).join(""):'<div class="muted">أضف المعلمين أولًا من قسم المعلمين.</div>';
 }
-
-
-/* =====================================================
-   RESET IMPACT FORM
-===================================================== */
-
-function resetImpactForm(){
-
-    document.getElementById(
-        "impactTeacher"
-    ).value="";
-
-    document.getElementById(
-        "impactWorksheet"
-    ).innerHTML =
-        `<option value="">اختاري الورقة</option>`;
-
-    document.getElementById(
-        "impactWorksheetInfo"
-    ).style.display="none";
-
-    document.querySelectorAll(
-        '#impactQuestions input[type="radio"]'
-    ).forEach(input=>{
-        input.checked=false;
-    });
-
-    document.getElementById(
-        "impactAverageResult"
-    ).textContent="0.00";
-
-    document.getElementById(
-        "impactPercentageResult"
-    ).textContent="0%";
-
-    document.getElementById(
-        "impactLevelResult"
-    ).textContent="—";
-
-    setDefaultDate();
-
+async function addTeacher(){
+ const input=document.getElementById("newTeacherName"),name=input.value.trim();
+ if(!name)return showToast("اكتب اسم المعلم أولًا");
+ const exists=db.teachers.some(t=>t.trim().toLowerCase()===name.toLowerCase());
+ if(exists)return showToast("المعلم موجود بالفعل");
+ db.teachers.push(name);
+ try{
+   await saveDatabase();
+   input.value="";
+   renderAll();
+   showToast("تمت إضافة المعلم وحفظه في Firebase");
+ }catch(e){
+   db.teachers.pop();
+   console.error(e);
+   showToast("تعذر حفظ المعلم في Firebase");
+ }
 }
+window.addTeacher=addTeacher;
+async function removeTeacher(i){
+ if(!confirm("هل تريد حذف هذا المعلم؟"))return;
+ const old=[...db.teachers];
+ db.teachers.splice(i,1);
+ try{
+   await saveDatabase();
+   renderAll();
+   showToast("تم حذف المعلم وحفظ التغيير");
+ }catch(e){
+   db.teachers=old;
+   console.error(e);
+   renderAll();
+   showToast("تعذر حفظ الحذف في Firebase");
+ }
+}
+window.removeTeacher=removeTeacher;
+async function importTeachers(){
+ const file=document.getElementById("excelTeacherInput").files[0];
+ if(!file)return showToast("اختر ملف Excel أو CSV");
 
+ try{
+   const ext=(file.name.split(".").pop()||"").toLowerCase();
+   let wb;
 
-/* =====================================================
-   REPORTS
-===================================================== */
+   if(ext==="csv"){
+     const text=await file.text();
+     wb=XLSX.read(text.replace(/^\uFEFF/,""),{type:"string",raw:false});
+   }else if(ext==="xlsx"||ext==="xls"){
+     const buffer=await file.arrayBuffer();
+     wb=XLSX.read(new Uint8Array(buffer),{type:"array"});
+   }else{
+     return showToast("صيغة الملف غير مدعومة. استخدم XLSX أو XLS أو CSV");
+   }
+
+   if(!wb.SheetNames.length) return showToast("الملف لا يحتوي على ورقة بيانات");
+
+   const sheet=wb.Sheets[wb.SheetNames[0]];
+   const rows=XLSX.utils.sheet_to_json(sheet,{header:1,defval:""});
+   if(!rows.length)return showToast("الملف فارغ");
+
+   const normalizeHeader=v=>String(v??"")
+     .replace(/^\uFEFF/,"").trim().toLowerCase()
+     .replace(/\s+/g," ")
+     .replace(/[أإآ]/g,"ا")
+     .replace(/ة/g,"ه")
+     .replace(/ى/g,"ي");
+
+   const accepted=[
+     "الاسم","اسم المعلم","اسم المعلمه","اسم المعلم/المعلمه",
+     "المعلم","المعلمه","المعلمون","المعلمين",
+     "الاسم الكامل","اسم","teacher","teacher name","name","full name"
+   ];
+
+   let nameCol=-1;
+   const first=rows[0]||[];
+   first.forEach((v,i)=>{
+     const h=normalizeHeader(v);
+     if(nameCol===-1 && accepted.includes(h)) nameCol=i;
+   });
+
+   let dataRows=rows;
+   if(nameCol!==-1) dataRows=rows.slice(1);
+
+   if(nameCol===-1){
+     // If there is no recognizable header, use the first non-empty column.
+     nameCol=0;
+   }
+
+   const normalizeName=v=>String(v??"")
+     .replace(/^\uFEFF/,"").trim().replace(/\s+/g," ");
+
+   const isHeader=v=>{
+     const h=normalizeHeader(v);
+     return accepted.includes(h) || ["اسم المعلم والمعلمه","اسم المعلم / المعلمه"].includes(h);
+   };
+
+   let added=0;
+   const existing=new Set(db.teachers.map(t=>normalizeName(t).toLowerCase()));
+
+   for(const row of dataRows){
+     const n=normalizeName(row?.[nameCol]);
+     if(!n || isHeader(n)) continue;
+     if(n.length>150) continue;
+     const key=n.toLowerCase();
+     if(!existing.has(key)){
+       db.teachers.push(n);
+       existing.add(key);
+       added++;
+     }
+   }
+
+   if(!added){
+     showToast("لم يتم العثور على أسماء جديدة في الملف");
+     return;
+   }
+
+   try{
+     await saveDatabase();
+     document.getElementById("excelTeacherInput").value="";
+     renderAll();
+     showToast(`تم استيراد ${added} اسم وحفظها في Firebase`);
+   }catch(e){
+     // Keep the previous database if cloud save failed.
+     db.teachers=db.teachers.slice(0,-added);
+     console.error(e);
+     renderAll();
+     showToast("تمت قراءة الملف لكن تعذر حفظ الأسماء في Firebase");
+   }
+ }catch(err){
+   console.error(err);
+   showToast("تعذر قراءة الملف. تأكد أنه XLSX أو XLS أو CSV صالح");
+ }
+}
+window.importTeachers=importTeachers;
+
+function renderObjectives(){
+ const box=document.getElementById("objectives");
+ if(!box.children.length)addObjective();
+}
+function addObjective(){
+ const box=document.getElementById("objectives"),id=Date.now()+Math.random();
+ const div=document.createElement("div");div.className="field objective-row";div.style.marginBottom="10px";
+ div.innerHTML=`<div style="display:flex;gap:8px"><input class="objective-input" placeholder="اكتب الهدف"><button class="btn red small" onclick="this.closest('.objective-row').remove()">حذف</button></div>`;
+ box.appendChild(div);
+}
+window.addObjective=addObjective;
+function renderRatingArea(){
+ const box=document.getElementById("ratingArea");
+ box.innerHTML=`<div class="table-wrap"><table class="table rating-table"><thead><tr><th>المؤشر</th><th>التقدير من 1 إلى 5</th></tr></thead><tbody>${RATING_ITEMS.map((x,i)=>`<tr><td>${x}</td><td><input type="number" min="1" max="5" value="5" class="rating-input" data-index="${i}"></td></tr>`).join("")}</tbody></table></div>`;
+}
+function renderImpactQuestions(){
+ document.getElementById("impactQuestions").innerHTML=IMPACT_QUESTIONS.map((q,i)=>`<div class="question"><label>${i+1}. ${q}</label><div class="radio-row">${[1,2,3,4,5].map(n=>`<label><input type="radio" name="impact${i}" value="${n}" ${n===5?"checked":""}> ${n}</label>`).join("")}</div></div>`).join("");
+}
+function calculateQuality(){
+ const vals=[...document.querySelectorAll(".rating-input")].map(x=>Math.max(1,Math.min(5,Number(x.value)||0))).filter(Boolean);
+ const avg=vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:0;
+ return {average:avg,percentage:(avg/5)*100,level:avg>=4.5?"ممتاز":avg>=3.5?"جيد جدًا":avg>=2.5?"جيد":"يحتاج تطوير"};
+}
+async function saveWorksheet(){
+ const title=document.getElementById("worksheetName").value.trim(),date=document.getElementById("worksheetDate").value;
+ const teacher=[...document.querySelectorAll("#worksheetTeachers input:checked")].map(x=>x.value);
+ if(!title)return showToast("اكتب اسم ورقة العمل");
+ if(!date)return showToast("حدد التاريخ");
+ if(!teacher.length)return showToast("اختر معلمًا واحدًا على الأقل");
+
+ const objectives=[...document.querySelectorAll(".objective-input")].map(x=>x.value.trim()).filter(Boolean);
+ const quality=calculateQuality();
+ const id=(window.crypto&&typeof window.crypto.randomUUID==="function")
+   ?window.crypto.randomUUID()
+   :`w_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+
+ const w={
+   id,teacher,title,date,
+   participants:Number(document.getElementById("participants").value)||0,
+   objectives,
+   ratings:[...document.querySelectorAll(".rating-input")].map(x=>Number(x.value)||0),
+   qualityAverage:quality.average,
+   qualityPercentage:quality.percentage,
+   qualityLevel:quality.level,
+   impactId:null,
+   createdAt:new Date().toISOString()
+ };
+
+ db.worksheets.push(w);
+ try{
+   await saveDatabase();
+   resetWorksheetForm();
+   renderAll();
+   showView("records");
+   showToast("تم حفظ ورقة العمل في Firebase");
+ }catch(e){
+   db.worksheets=db.worksheets.filter(x=>x.id!==id);
+   console.error(e);
+   showToast("تعذر حفظ ورقة العمل في Firebase");
+ }
+}
+window.saveWorksheet=saveWorksheet;
+function resetWorksheetForm(){document.getElementById("worksheetName").value="";document.getElementById("participants").value="";document.getElementById("objectives").innerHTML="";addObjective();renderTeacherChecks();renderRatingArea();setToday()}
+window.resetWorksheetForm=resetWorksheetForm;
+
+function renderImpactSelect(){
+ const s=document.getElementById("impactWorksheet");
+ s.innerHTML='<option value="">اختر ورقة العمل</option>'+db.worksheets.map(w=>`<option value="${w.id}">${escapeHTML(w.title)} — ${formatDate(w.date)}</option>`).join("");
+}
+async function saveImpact(){
+ const worksheetId=document.getElementById("impactWorksheet").value,date=document.getElementById("impactDate").value;
+ if(!worksheetId)return showToast("اختر ورقة العمل");
+ if(!date)return showToast("حدد التاريخ");
+
+ const answers=IMPACT_QUESTIONS.map((_,i)=>Number(document.querySelector(`input[name="impact${i}"]:checked`)?.value)||0);
+ if(answers.some(v=>v<1||v>5))return showToast("أجب عن جميع مؤشرات الأثر");
+
+ const avg=answers.reduce((a,b)=>a+b,0)/(answers.length||1),percentage=avg/5*100;
+ const id=(window.crypto&&typeof window.crypto.randomUUID==="function")
+   ?window.crypto.randomUUID()
+   :`i_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+
+ db.impacts.push({id,worksheetId,date,answers,average:avg,percentage,createdAt:new Date().toISOString()});
+ const w=db.worksheets.find(x=>x.id===worksheetId);
+ const oldImpactId=w?w.impactId:null;
+ if(w)w.impactId=id;
+
+ try{
+   await saveDatabase();
+   renderAll();
+   showToast("تم حفظ قياس الأثر في Firebase");
+ }catch(e){
+   db.impacts=db.impacts.filter(x=>x.id!==id);
+   if(w)w.impactId=oldImpactId||null;
+   console.error(e);
+   showToast("تعذر حفظ قياس الأثر في Firebase");
+ }
+}
+window.saveImpact=saveImpact;
+
+function renderRecords(){
+ const q=document.getElementById("recordSearch").value.trim().toLowerCase(),from=document.getElementById("recordFrom").value,to=document.getElementById("recordTo").value;
+ let rows=db.worksheets.filter(w=>(!q||w.title.toLowerCase().includes(q)||(w.teacher||[]).join(" ").toLowerCase().includes(q))&&(!from||w.date>=from)&&(!to||w.date<=to));
+ const box=document.getElementById("recordsTable");
+ if(!rows.length){box.innerHTML='<div class="empty">لا توجد نتائج</div>';return}
+ box.innerHTML=`<table class="table"><thead><tr><th>الورقة</th><th>المعلمون</th><th>التاريخ</th><th>المشاركون</th><th>الجودة</th><th>الأثر</th><th>إجراء</th></tr></thead><tbody>${rows.map(w=>{const imp=db.impacts.find(i=>i.id===w.impactId);return `<tr><td>${escapeHTML(w.title)}</td><td>${escapeHTML((w.teacher||[]).join("، "))}</td><td>${formatDate(w.date)}</td><td>${w.participants||0}</td><td><span class="pill">${Math.round(w.qualityPercentage||0)}%</span></td><td>${imp?`<span class="pill">${Math.round(imp.percentage)}%</span>`:"غير مقاس"}</td><td><button class="btn red small" onclick="deleteWorksheet('${w.id}')">حذف</button></td></tr>`}).join("")}</tbody></table>`;
+}
+window.renderRecords=renderRecords;
+async function deleteWorksheet(id){
+ if(!confirm("سيتم حذف الورقة وقياس أثرها المرتبط بها. متابعة؟"))return;
+ const oldWorksheets=db.worksheets,oldImpacts=db.impacts;
+ db.worksheets=db.worksheets.filter(w=>w.id!==id);
+ db.impacts=db.impacts.filter(i=>i.worksheetId!==id);
+ try{
+   await saveDatabase();
+   renderAll();
+   showToast("تم الحذف وحفظ التغيير في Firebase");
+ }catch(e){
+   db.worksheets=oldWorksheets;
+   db.impacts=oldImpacts;
+   console.error(e);
+   renderAll();
+   showToast("تعذر حفظ الحذف في Firebase");
+ }
+}
+window.deleteWorksheet=deleteWorksheet;
 
 function renderReports(){
-
-    const container =
-        document.getElementById(
-            "reportsContainer"
-        );
-
-    if(!container) return;
-
-    const searchElement =
-        document.getElementById(
-            "reportSearch"
-        );
-
-    const teacherElement =
-        document.getElementById(
-            "reportTeacherFilter"
-        );
-
-    const search =
-        searchElement
-            ? searchElement.value
-                .trim()
-                .toLowerCase()
-            : "";
-
-    const teacher =
-        teacherElement
-            ? teacherElement.value
-            : "";
-
-    let works =
-        [...db.worksheets];
-
-    if(search){
-
-        works =
-            works.filter(
-                work =>
-                    String(work.title || "")
-                    .toLowerCase()
-                    .includes(search)
-            );
-
-    }
-
-    if(teacher){
-
-        works =
-            works.filter(
-                work =>
-                    work.teacher === teacher
-            );
-
-    }
-
-    works.sort(
-        (a,b)=>
-            new Date(b.createdAt || 0) -
-            new Date(a.createdAt || 0)
-    );
-
-    if(!works.length){
-
-        container.innerHTML=`
-
-            <div class="card"
-                 style="text-align:center;color:#6b7280">
-
-                لا توجد تقارير حتى الآن.
-
-            </div>
-
-        `;
-
-        return;
-
-    }
-
-    container.innerHTML =
-        works.map(
-            work=>createReportCard(work)
-        ).join("");
-
-    refreshIcons();
-
+ const q=db.worksheets.map(w=>w.qualityPercentage||0),ia=db.impacts.map(i=>i.percentage||0);
+ if(qualityChart)qualityChart.destroy();if(impactChart)impactChart.destroy();
+ qualityChart=new Chart(document.getElementById("qualityChart"),{type:"bar",data:{labels:db.worksheets.slice(-10).map(w=>w.title.length>16?w.title.slice(0,16)+"…":w.title),datasets:[{label:"الجودة %",data:q.slice(-10)}]},options:{responsive:true,scales:{y:{beginAtZero:true,max:100}}}});
+ impactChart=new Chart(document.getElementById("impactChart"),{type:"bar",data:{labels:db.impacts.slice(-10).map(i=>{const w=db.worksheets.find(x=>x.id===i.worksheetId);return w?w.title.slice(0,16):"أثر"}),datasets:[{label:"الأثر %",data:ia.slice(-10)}]},options:{responsive:true,scales:{y:{beginAtZero:true,max:100}}}});
+ const avgQ=q.length?q.reduce((a,b)=>a+b,0)/q.length:0,avgI=ia.length?ia.reduce((a,b)=>a+b,0)/ia.length:0;
+ document.getElementById("analysisSummary").innerHTML=`<div class="grid" style="grid-template-columns:repeat(2,1fr)"><div><b>متوسط جودة أوراق العمل</b><div class="progress" style="margin-top:8px"><span style="width:${avgQ}%"></span></div><div style="margin-top:7px">${Math.round(avgQ)}%</div></div><div><b>متوسط أثر التطبيق</b><div class="progress" style="margin-top:8px"><span style="width:${avgI}%"></span></div><div style="margin-top:7px">${Math.round(avgI)}%</div></div></div>`;
 }
-
-
-function createReportCard(work){
-
-    const impact =
-        db.impacts.find(
-            item =>
-                Number(item.worksheetId) === Number(work.id)
-        );
-
-    const impactPercentage =
-        impact
-            ? Math.round(Number(impact.percentage)||0)
-            : 0;
-
-    const comparison =
-        impact
-            ? Math.round(
-                Number(impact.percentage || 0) -
-                Number(work.qualityPercentage || 0)
-              )
-            : null;
-
-    const objectives =
-        Array.isArray(work.objectives)
-            ? work.objectives
-            : [];
-
-    const ratings =
-        Array.isArray(work.ratings)
-            ? work.ratings
-            : [];
-
-    return `
-
-        <div class="report-card"
-             data-worksheet-id="${Number(work.id)}">
-
-            <div class="report-head">
-
-                <div>
-
-                    <h3>
-                        ${escapeHTML(work.title)}
-                    </h3>
-
-                    <div class="report-meta">
-
-                        <span>
-                            المعلمة:
-                            ${escapeHTML(work.teacher)}
-                        </span>
-
-                        <span>
-                            التاريخ:
-                            ${formatDate(work.date)}
-                        </span>
-
-                    </div>
-
-                </div>
-
-                <span class="badge">
-                    ${Math.round(Number(work.qualityPercentage)||0)}%
-                    جودة
-                </span>
-
-            </div>
-
-            <div class="result-box">
-
-                <div class="result-item">
-
-                    <strong>
-                        ${Number(work.qualityAverage || 0).toFixed(2)}
-                    </strong>
-
-                    <span>
-                        متوسط الجودة
-                    </span>
-
-                </div>
-
-                <div class="result-item">
-
-                    <strong>
-                        ${impact
-                            ? impactPercentage+"%"
-                            : "—"}
-                    </strong>
-
-                    <span>
-                        الأثر
-                    </span>
-
-                </div>
-
-                <div class="result-item">
-
-                    <strong>
-                        ${comparison !== null
-                            ? (comparison > 0 ? "+" : "") + comparison + "%"
-                            : "—"}
-                    </strong>
-
-                    <span>
-                        الفرق بين الجودة والأثر
-                    </span>
-
-                </div>
-
-            </div>
-
-            <div style="margin-top:15px">
-
-                <strong>الأهداف:</strong>
-
-                <ul style="margin-top:8px;padding-right:20px">
-
-                    ${
-                        objectives.length
-                        ? objectives.map(
-                            (objective,index)=>`
-
-                                <li style="margin-bottom:5px">
-
-                                    ${escapeHTML(objective)}
-
-                                    — ${ratings[index] || 0}/5
-
-                                </li>
-
-                            `
-                        ).join("")
-                        : "<li>لا توجد أهداف</li>"
-                    }
-
-                </ul>
-
-            </div>
-
-            <div style="margin-top:15px;color:#6b7280;font-size:13px">
-
-                <strong style="color:#374151">
-                    التحليل:
-                </strong>
-
-                ${generateAnalysis(
-                    work,
-                    impact
-                )}
-
-            </div>
-
-            <div class="buttons no-print">
-
-                <button
-                    type="button"
-                    class="btn btn-primary"
-                    onclick="viewReport(${Number(work.id)})">
-
-                    <i data-lucide="eye"></i>
-                    عرض التقرير
-
-                </button>
-
-                <button
-                    type="button"
-                    class="btn btn-danger"
-                    onclick="deleteWorksheet(${Number(work.id)})">
-
-                    <i data-lucide="trash-2"></i>
-                    حذف الورقة
-
-                </button>
-
-                ${
-                    impact
-                    ? `
-                    <button
-                        type="button"
-                        class="btn btn-light"
-                        onclick="deleteImpact(${Number(impact.id)})">
-
-                        <i data-lucide="eraser"></i>
-                        حذف قياس الأثر
-
-                    </button>
-                    `
-                    : ""
-                }
-
-            </div>
-
-        </div>
-
-    `;
-
+window.renderReports=renderReports;
+function printRecords(){
+ const html=document.getElementById("recordsTable").innerHTML;
+ const w=window.open("","_blank");w.document.write(`<html lang="ar" dir="rtl"><head><meta charset="UTF-8"><title>سجل أوراق العمل</title><style>body{font-family:Arial;padding:25px}table{width:100%;border-collapse:collapse}th,td{padding:10px;border:1px solid #ccc;text-align:right}h2{text-align:center}</style></head><body><h2>نظام أثر — سجل أوراق العمل</h2>${html}<script>
+if(location.protocol==="file:"){
+ const n=document.getElementById("firebaseNotice");
+ if(n)n.style.display="block";
 }
-
-
-/* =====================================================
-   ANALYSIS
-===================================================== */
-
-function generateAnalysis(work,impact){
-
-    const quality =
-        Number(work.qualityPercentage)||0;
-
-    if(!impact){
-
-        if(quality>=80){
-
-            return "تظهر نتائج التقييم مستوى جيدًا من جودة ورقة العمل، ولم يتم تسجيل قياس أثر لها بعد.";
-
-        }
-
-        if(quality>=60){
-
-            return "تحتاج بعض جوانب ورقة العمل إلى مزيد من التطوير قبل مقارنة أثرها.";
-
-        }
-
-        return "توجد جوانب تحتاج إلى تحسين في ورقة العمل، ويستحسن مراجعتها قبل تنفيذ قياس الأثر.";
-
-    }
-
-    const difference =
-        Number(impact.percentage || 0) -
-        quality;
-
-    if(
-        impact.percentage >= 80 &&
-        quality >= 80
-    ){
-
-        return "تشير النتائج إلى مستوى مرتفع في جودة الورقة وقياس أثرها، مع توافق جيد بين التقييم والأثر.";
-
-    }
-
-    if(difference >= 10){
-
-        return "أظهر قياس الأثر نتيجة أعلى من تقييم جودة الورقة، مما يوفر مؤشرًا يستحق المتابعة والتحليل.";
-
-    }
-
-    if(difference <= -10){
-
-        return "جاء قياس الأثر أقل من تقييم جودة الورقة، ويمكن الاستفادة من النتيجة في مراجعة التطبيق ومدى تحقق الأهداف.";
-
-    }
-
-    return "توجد درجة تقارب بين جودة الورقة ونتيجة قياس الأثر.";
-
+</script>
+</body></html>`);w.document.close();w.print();
 }
-
-
-/* =====================================================
-   VIEW REPORT
-===================================================== */
-
-let reportChart = null;
-
-function viewReport(id){
-
-    const worksheetId =
-        Number(id);
-
-    const work =
-        db.worksheets.find(
-            item=>Number(item.id)===worksheetId
-        );
-
-    if(!work){
-
-        showToast("تعذر العثور على ورقة العمل");
-
-        return;
-
-    }
-
-    const impact =
-        db.impacts.find(
-            item =>
-                Number(item.worksheetId) === worksheetId
-        );
-
-    document.getElementById(
-        "modalTitle"
-    ).textContent =
-        work.title;
-
-    document.getElementById(
-        "modalBody"
-    ).innerHTML = `
-
-        <div>
-
-            <p>
-                <strong>المعلمة:</strong>
-                ${escapeHTML(work.teacher)}
-            </p>
-
-            <p style="margin-top:8px">
-                <strong>التاريخ:</strong>
-                ${formatDate(work.date)}
-            </p>
-
-            <div class="result-box">
-
-                <div class="result-item">
-
-                    <strong>
-                        ${Math.round(
-                            Number(work.qualityPercentage)||0
-                        )}%
-                    </strong>
-
-                    <span>جودة الورقة</span>
-
-                </div>
-
-                <div class="result-item">
-
-                    <strong>
-                        ${impact
-                            ? Math.round(
-                                Number(impact.percentage)||0
-                              )+"%"
-                            : "—"}
-                    </strong>
-
-                    <span>قياس الأثر</span>
-
-                </div>
-
-                <div class="result-item">
-
-                    <strong>
-                        ${impact
-                            ? Math.round(
-                                Number(impact.percentage || 0) -
-                                Number(work.qualityPercentage || 0)
-                              )+"%"
-                            : "—"}
-                    </strong>
-
-                    <span>الفرق</span>
-
-                </div>
-
-            </div>
-
-            <h3 style="margin-top:25px">
-                أهداف الورقة
-            </h3>
-
-            <ul style="padding-right:20px;margin-top:10px">
-
-                ${
-                    (work.objectives || []).map(
-                        (objective,index)=>`
-
-                        <li style="margin-bottom:7px">
-
-                            ${escapeHTML(objective)}
-
-                            — التقييم:
-                            <strong>
-                                ${(work.ratings || [])[index] || 0}/5
-                            </strong>
-
-                        </li>
-
-                    `).join("")
-                }
-
-            </ul>
-
-            <div class="chart-container">
-
-                <canvas id="reportChart"></canvas>
-
-            </div>
-
-            <div class="card"
-                 style="margin-top:20px">
-
-                <strong>التحليل:</strong>
-
-                <p style="margin-top:8px;color:#6b7280">
-
-                    ${generateAnalysis(work,impact)}
-
-                </p>
-
-            </div>
-
-            <div class="buttons no-print">
-
-                <button
-                    type="button"
-                    class="btn btn-danger"
-                    onclick="deleteWorksheet(${Number(work.id)}); closeModal();">
-
-                    <i data-lucide="trash-2"></i>
-                    حذف ورقة العمل
-
-                </button>
-
-                ${
-                    impact
-                    ? `
-                    <button
-                        type="button"
-                        class="btn btn-light"
-                        onclick="deleteImpact(${Number(impact.id)}); viewReport(${Number(work.id)})">
-
-                        <i data-lucide="eraser"></i>
-                        حذف قياس الأثر
-
-                    </button>
-                    `
-                    : ""
-                }
-
-            </div>
-
-        </div>
-
-    `;
-
-    document.getElementById(
-        "reportModal"
-    ).classList.add("show");
-
-    refreshIcons();
-
-    setTimeout(()=>{
-
-        const canvas =
-            document.getElementById(
-                "reportChart"
-            );
-
-        if(!canvas) return;
-
-        if(reportChart){
-
-            try{
-                reportChart.destroy();
-            }catch(e){}
-
-            reportChart=null;
-
-        }
-
-        reportChart =
-            new Chart(
-                canvas,
-                {
-
-                    type:"bar",
-
-                    data:{
-
-                        labels:[
-                            "جودة الورقة",
-                            "الأثر"
-                        ],
-
-                        datasets:[{
-
-                            label:"النسبة المئوية",
-
-                            data:[
-                                Math.round(
-                                    Number(work.qualityPercentage)||0
-                                ),
-
-                                impact
-                                    ? Math.round(
-                                        Number(impact.percentage)||0
-                                      )
-                                    : 0
-                            ]
-
-                        }]
-
-                    },
-
-                    options:{
-
-                        responsive:true,
-
-                        maintainAspectRatio:false,
-
-                        scales:{
-
-                            y:{
-
-                                beginAtZero:true,
-
-                                max:100
-
-                            }
-
-                        }
-
-                    }
-
-                }
-            );
-
-    },100);
-
-}
-
-
-function closeModal(){
-
-    const modal =
-        document.getElementById(
-            "reportModal"
-        );
-
-    modal.classList.remove("show");
-
-    if(reportChart){
-
-        try{
-            reportChart.destroy();
-        }catch(e){}
-
-        reportChart=null;
-
-    }
-
-}
-
-
-/* =====================================================
-   DELETE WORKSHEET
-===================================================== */
-
-function deleteWorksheet(id){
-
-    const worksheetId =
-        Number(id);
-
-    if(
-        !Number.isFinite(worksheetId) ||
-        worksheetId <= 0
-    ){
-
-        showToast(
-            "تعذر تحديد ورقة العمل"
-        );
-
-        return false;
-
-    }
-
-    const worksheetIndex =
-        db.worksheets.findIndex(
-            worksheet =>
-                Number(worksheet.id) === worksheetId
-        );
-
-    if(worksheetIndex === -1){
-
-        showToast(
-            "تعذر العثور على ورقة العمل"
-        );
-
-        return false;
-
-    }
-
-    const worksheet =
-        db.worksheets[worksheetIndex];
-
-    const confirmed =
-        confirm(
-            `هل تريدين حذف ورقة العمل «${worksheet.title}»؟\n\nسيتم حذف قياس الأثر المرتبط بها أيضًا.\n\nلا يمكن التراجع عن هذا الحذف.`
-        );
-
-    if(!confirmed) return false;
-
-    /* حذف الورقة */
-    db.worksheets.splice(
-        worksheetIndex,
-        1
-    );
-
-    /* حذف الأثر المرتبط بالورقة */
-    db.impacts =
-        db.impacts.filter(
-            impact =>
-                Number(impact.worksheetId) !== worksheetId
-        );
-
-    if(!saveDatabase()) return false;
-
-    /* تحديث كل أجزاء النظام */
-    renderAll();
-
-    /* إذا كانت الصفحة الحالية التقارير */
-    renderReports();
-
-    refreshIcons();
-
-    showToast(
-        "تم حذف ورقة العمل وقياس الأثر المرتبط بها بنجاح"
-    );
-
-    return true;
-
-}
-
-
-/* =====================================================
-   DELETE IMPACT
-===================================================== */
-
-function deleteImpact(id){
-
-    const impactId =
-        Number(id);
-
-    if(
-        !Number.isFinite(impactId) ||
-        impactId <= 0
-    ){
-
-        showToast("تعذر تحديد قياس الأثر");
-
-        return false;
-
-    }
-
-    const index =
-        db.impacts.findIndex(
-            impact =>
-                Number(impact.id) === impactId
-        );
-
-    if(index === -1){
-
-        showToast(
-            "تعذر العثور على قياس الأثر"
-        );
-
-        return false;
-
-    }
-
-    const impact =
-        db.impacts[index];
-
-    const confirmed =
-        confirm(
-            "هل تريدين حذف قياس الأثر لهذا النموذج؟"
-        );
-
-    if(!confirmed) return false;
-
-    const worksheet =
-        db.worksheets.find(
-            work =>
-                Number(work.id) ===
-                Number(impact.worksheetId)
-        );
-
-    if(worksheet){
-
-        worksheet.impactId=null;
-
-    }
-
-    db.impacts.splice(
-        index,
-        1
-    );
-
-    if(!saveDatabase()) return false;
-
-    renderAll();
-
-    refreshIcons();
-
-    showToast(
-        "تم حذف قياس الأثر بنجاح"
-    );
-
-    return true;
-
-}
-
-
-/* =====================================================
-   HOME
-===================================================== */
-
-function renderHome(){
-
-    document.getElementById(
-        "worksCount"
-    ).textContent =
-        db.worksheets.length;
-
-    document.getElementById(
-        "teachersCount"
-    ).textContent =
-        db.teachers.length;
-
-    const qualityValues =
-        db.worksheets.map(
-            work=>Number(work.qualityPercentage)||0
-        );
-
-    const qualityAverage =
-        qualityValues.length
-            ? qualityValues.reduce(
-                (a,b)=>a+b,
-                0
-              ) / qualityValues.length
-            : 0;
-
-    document.getElementById(
-        "qualityAverage"
-    ).textContent =
-        Math.round(qualityAverage)+"%";
-
-    const impactValues =
-        db.impacts.map(
-            impact=>Number(impact.percentage)||0
-        );
-
-    const impactAverage =
-        impactValues.length
-            ? impactValues.reduce(
-                (a,b)=>a+b,
-                0
-              ) / impactValues.length
-            : 0;
-
-    document.getElementById(
-        "impactAverage"
-    ).textContent =
-        Math.round(impactAverage)+"%";
-
-    const table =
-        document.getElementById(
-            "recentTable"
-        );
-
-    const recent =
-        [...db.worksheets]
-        .sort(
-            (a,b)=>
-                new Date(b.createdAt || 0) -
-                new Date(a.createdAt || 0)
-        )
-        .slice(0,8);
-
-    if(!recent.length){
-
-        table.innerHTML=`
-
-            <tr>
-
-                <td colspan="5"
-                    style="text-align:center;color:#6b7280">
-
-                    لا توجد أوراق عمل مسجلة حتى الآن.
-
-                </td>
-
-            </tr>
-
-        `;
-
-        return;
-
-    }
-
-    table.innerHTML =
-        recent.map(work=>{
-
-            const impact =
-                db.impacts.find(
-                    item =>
-                        Number(item.worksheetId) ===
-                        Number(work.id)
-                );
-
-            return `
-
-                <tr>
-
-                    <td>
-                        ${escapeHTML(work.title)}
-                    </td>
-
-                    <td>
-                        ${escapeHTML(work.teacher)}
-                    </td>
-
-                    <td>
-                        ${formatDate(work.date)}
-                    </td>
-
-                    <td>
-                        ${Math.round(
-                            Number(work.qualityPercentage)||0
-                        )}%
-                    </td>
-
-                    <td>
-                        ${
-                            impact
-                                ? Math.round(
-                                    Number(impact.percentage)||0
-                                  )+"%"
-                                : "—"
-                        }
-                    </td>
-
-                </tr>
-
-            `;
-
-        }).join("");
-
-}
-
-
-/* =====================================================
-   RENDER ALL
-===================================================== */
-
-function renderAll(){
-
-    normalizeDatabase();
-
-    renderTeachers();
-
-    renderHome();
-
-    renderReports();
-
-    refreshIcons();
-
-}
-
-
-/* =====================================================
-   LEVEL
-===================================================== */
-
-function getLevel(percentage){
-
-    if(percentage >= 90)
-        return "ممتاز";
-
-    if(percentage >= 80)
-        return "جيد جدًا";
-
-    if(percentage >= 70)
-        return "جيد";
-
-    if(percentage >= 60)
-        return "مقبول";
-
-    return "يحتاج إلى تحسين";
-
-}
-
-
-/* =====================================================
-   HELPERS
-===================================================== */
-
-function formatDate(date){
-
-    if(!date) return "—";
-
-    const parsed =
-        new Date(
-            date+"T00:00:00"
-        );
-
-    if(Number.isNaN(parsed.getTime())){
-        return "—";
-    }
-
-    return parsed.toLocaleDateString(
-        "ar-OM"
-    );
-
-}
-
-
-function escapeHTML(value){
-
-    return String(value ?? "")
-        .replace(/&/g,"&amp;")
-        .replace(/</g,"&lt;")
-        .replace(/>/g,"&gt;")
-        .replace(/"/g,"&quot;")
-        .replace(/'/g,"&#039;");
-
-}
-
-
-function escapeAttribute(value){
-
-    return escapeHTML(value);
-
-}
-
-
-let toastTimer=null;
-
-function showToast(message){
-
-    const toast =
-        document.getElementById(
-            "toast"
-        );
-
-    if(!toast) return;
-
-    toast.textContent =
-        message;
-
-    toast.classList.add("show");
-
-    clearTimeout(toastTimer);
-
-    toastTimer =
-        setTimeout(()=>{
-
-            toast.classList.remove("show");
-
-        },2500);
-
-}
-
-
-/* =====================================================
-   CLOSE MODAL
-===================================================== */
-
-document.getElementById("reportModal")
-.addEventListener("click",function(event){
-
-    if(event.target === this){
-
-        closeModal();
-
-    }
-
-});
-
-
-/* =====================================================
-   ESC CLOSE
-===================================================== */
-
-document.addEventListener("keydown",function(event){
-
-    if(event.key === "Escape"){
-
-        const modal =
-            document.getElementById(
-                "reportModal"
-            );
-
-        if(modal.classList.contains("show")){
-
-            closeModal();
-
-        }
-
-    }
-
-});
-
+window.printRecords=printRecords;
 </script>
 
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+import { getAuth,onAuthStateChanged,signInWithEmailAndPassword,signOut,setPersistence,browserLocalPersistence } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+import { getFirestore,doc,getDoc,setDoc,serverTimestamp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+
+const firebaseConfig={
+ apiKey:"AIzaSyDT57uwdrf0dEvV7jaYv3coQ7h7uJ8awho",
+ authDomain:"athar-dcd0f.firebaseapp.com",
+ projectId:"athar-dcd0f",
+ storageBucket:"athar-dcd0f.firebasestorage.app",
+ messagingSenderId:"141131361466",
+ appId:"1:141131361466:web:a5b1ab73bbd789f671e683",
+ measurementId:"G-0TQ3DK04K8"
+};
+
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const firestore=getFirestore(app);
+
+function firebaseErrorMessage(e){
+ const code=e?.code||"";
+ const map={
+  "auth/invalid-email":"البريد الإلكتروني غير صحيح.",
+  "auth/invalid-credential":"البريد الإلكتروني أو كلمة المرور غير صحيحة.",
+  "auth/wrong-password":"كلمة المرور غير صحيحة.",
+  "auth/user-not-found":"لا يوجد حساب بهذا البريد الإلكتروني.",
+  "auth/user-disabled":"هذا الحساب معطل.",
+  "auth/too-many-requests":"تمت محاولات كثيرة. انتظر قليلًا ثم حاول مرة أخرى.",
+  "auth/network-request-failed":"تعذر الاتصال بالإنترنت. تحقق من الاتصال.",
+  "permission-denied":"تم رفض الوصول من قواعد Firestore. تحقق من users وقواعد Firestore.",
+  "unavailable":"خدمة Firebase غير متاحة مؤقتًا. حاول مرة أخرى."
+ };
+ return map[code]||e?.message||"حدث خطأ غير معروف في Firebase.";
+}
+
+async function saveData(data){
+ if(!currentSchoolId)throw new Error("schoolId missing");
+ await setDoc(doc(firestore,"schools",currentSchoolId,"data","main"),{
+  teachers:Array.isArray(data.teachers)?data.teachers:[],
+  worksheets:Array.isArray(data.worksheets)?data.worksheets:[],
+  impacts:Array.isArray(data.impacts)?data.impacts:[],
+  updatedAt:serverTimestamp()
+ },{merge:true});
+}
+
+async function loadSchoolData(schoolId){
+ const snap=await getDoc(doc(firestore,"schools",schoolId,"data","main"));
+ if(snap.exists())return snap.data();
+ return {teachers:[],worksheets:[],impacts:[]};
+}
+
+async function login(){
+ const email=document.getElementById("loginEmail").value.trim();
+ const password=document.getElementById("loginPassword").value;
+ const err=document.getElementById("loginError");
+ err.textContent="";
+
+ if(!email||!password){
+  err.textContent="أدخل البريد الإلكتروني وكلمة المرور.";
+  return;
+ }
+
+ const btn=document.getElementById("loginBtn");
+ btn.disabled=true;
+ btn.textContent="جاري الدخول...";
+
+ try{
+  await signInWithEmailAndPassword(auth,email,password);
+ }catch(e){
+  console.error("Firebase login error:",e);
+  err.textContent=firebaseErrorMessage(e);
+ }finally{
+  btn.disabled=false;
+  btn.textContent="دخول";
+ }
+}
+
+async function logout(){
+ try{
+  await signOut(auth);
+ }catch(e){
+  console.error(e);
+  showToast("تعذر تسجيل الخروج");
+ }
+}
+
+document.getElementById("loginBtn").addEventListener("click",login);
+document.getElementById("loginPassword").addEventListener("keydown",e=>{
+ if(e.key==="Enter")login();
+});
+
+window.atharFirebase={saveData,logout};
+
+(async()=>{
+ try{
+  await setPersistence(auth,browserLocalPersistence);
+ }catch(e){
+  console.warn("تعذر تفعيل حفظ جلسة الدخول:",e);
+ }
+})();
+
+onAuthStateChanged(auth,async user=>{
+ currentUser=user;
+ const loading=document.getElementById("loading");
+ const appEl=document.getElementById("app");
+ const modal=document.getElementById("loginModal");
+ const err=document.getElementById("loginError");
+
+ if(!user){
+  appEl.style.display="none";
+  modal.classList.add("show");
+  loading.style.display="none";
+  return;
+ }
+
+ try{
+  const profile=await getDoc(doc(firestore,"users",user.uid));
+
+  if(!profile.exists()){
+   await signOut(auth);
+   loading.style.display="none";
+   modal.classList.add("show");
+   err.textContent="تم تسجيل الدخول، لكن لم يتم العثور على users لهذا الحساب.";
+   return;
+  }
+
+  const p=profile.data();
+  if(!p.schoolId){
+   await signOut(auth);
+   loading.style.display="none";
+   modal.classList.add("show");
+   err.textContent="الحساب موجود، لكنه غير مرتبط برمز مدرسة في users.";
+   return;
+  }
+
+  currentSchoolId=String(p.schoolId).trim();
+  currentSchoolName=p.schoolName||p.school||p.name||currentSchoolId;
+
+  const data=await loadSchoolData(currentSchoolId);
+  db={
+   teachers:Array.isArray(data.teachers)?data.teachers:[],
+   worksheets:Array.isArray(data.worksheets)?data.worksheets:[],
+   impacts:Array.isArray(data.impacts)?data.impacts:[]
+  };
+  normalizeDatabase();
+
+  document.getElementById("schoolNameDisplay").textContent=currentSchoolName;
+  document.getElementById("schoolIdDisplay").textContent=currentSchoolId;
+
+  modal.classList.remove("show");
+  appEl.style.display="flex";
+  loading.style.display="none";
+  setToday();
+  renderAll();
+  showToast("تم الدخول وتحميل بيانات المدرسة من Firebase");
+ }catch(e){
+  console.error("Firebase profile/data error:",e);
+  loading.style.display="none";
+  appEl.style.display="none";
+  modal.classList.add("show");
+  err.textContent="تم تسجيل الدخول لكن تعذر تحميل بيانات المدرسة: "+firebaseErrorMessage(e);
+ }
+});
+</script>
+<script>
+document.addEventListener("DOMContentLoaded",()=>{lucide.createIcons();setToday()});
+</script>
+<script>
+if(location.protocol==="file:"){
+ const n=document.getElementById("firebaseNotice");
+ if(n)n.style.display="block";
+}
+</script>
 </body>
 </html>
